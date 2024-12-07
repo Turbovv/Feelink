@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { Navbar } from "./navbar";
+import { ThemeProvider } from "../provider/theme-provider"
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -16,11 +17,18 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable}`}>
       <body>
         <TRPCReactProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
           <Navbar />
           {children}
+          </ThemeProvider>
           </TRPCReactProvider>
       </body>
     </html>
