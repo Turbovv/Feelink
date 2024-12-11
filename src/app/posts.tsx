@@ -22,7 +22,7 @@ export function Posts() {
               className="rounded-md border border-gray-300 p-4 shadow-sm"
             >
               <p className="text-lg font-semibold hover:underline">
-                {post.name}
+                {post.title}
               </p>
             </li>
           ))}

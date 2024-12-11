@@ -1,15 +1,12 @@
 import Link from "next/link";
 
 import { auth } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
+import {  HydrateClient } from "~/trpc/server";
 import DiscordIcon from "../../ui/icons/discordicon";
 
 export default async function Discord() {
   const session = await auth();
 
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
-  }
 
   return (
     <HydrateClient>
