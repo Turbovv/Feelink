@@ -10,7 +10,7 @@ export const gifRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const apiKey = process.env.NEXT_PUBLIC_GIPHY_API_KEY;
+      const apiKey = process.env.GIPHY_API_KEY;
       if (!apiKey) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

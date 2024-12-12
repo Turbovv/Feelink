@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { api } from "~/trpc/react";
 export function Posts() {
   const { data: posts, isLoading, error } = api.post.Posts.useQuery();
@@ -21,9 +22,7 @@ export function Posts() {
               key={post.id}
               className="rounded-md border border-gray-300 p-4 shadow-sm"
             >
-              <p className="text-lg font-semibold hover:underline">
-                {post.title}
-              </p>
+              <Link href={`/posts/${post.id}`}>{post.title}</Link>
             </li>
           ))}
         </ul>
