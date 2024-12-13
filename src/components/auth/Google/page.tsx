@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import SignIn from "~/components/sign-in";
 
-export default function DiscordAuth() {
+export default function GoogleAuth() {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -14,11 +14,11 @@ export default function DiscordAuth() {
   }
 
   return (
-    <SignIn
-      provider="discord"
-      label="Sign with Discord"
-      bgColor="bg-gray-800"
-      hoverColor="bg-gray-900"
-    />
+   <SignIn
+         provider="google"
+         label="Sign with Google"
+         bgColor="bg-gray-800"
+         hoverColor="bg-gray-900"
+       />
   );
 }

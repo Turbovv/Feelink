@@ -1,13 +1,41 @@
+"use client";
 
-import Discord from "~/components/auth/Discord/page";
 import { ModeToggle } from "./ui/mode-toggle";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import SignOut from "./sign-out";
 
 export function Navbar() {
-    return <div className="px-16 h-16 justify-between items-center flex">
-        <h1 className="" >Feelink</h1>
-       <div className="flex gap-5  items-center">
-       <Discord />
-       <ModeToggle />
-       </div>
+  const { data: session } = useSession();
+  const pathname = usePathname();
+
+  if (pathname === "/auth/sign-in") {
+    return null;
+  }
+
+  return (
+    <div className="flex h-16 items-center justify-between px-16">
+      <Link href="/">Feelink</Link>
+      <div className="flex items-center gap-5">
+        {session ? (
+          <div className="flex items-center gap-3">
+            <Link href="/create">Create</Link>
+              <img
+                src={session.user.image || "Avatar"}
+                alt={session.user.name || "User"}
+                className="h-8 w-8 rounded-full"
+              />
+            <span>{session.user?.name}</span>
+            <SignOut />
+          </div>
+        ) : (
+          <Link href="/auth/sign-in" >
+            <p>Sign In</p>
+          </Link>
+        )}
+        <ModeToggle />
+      </div>
     </div>
+  );
 }

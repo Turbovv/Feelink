@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -10,12 +10,18 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 
 export default function CreatePost() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [gifUrl, setGifUrl] = useState("");
   const [gifQuery, setGifQuery] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/sign-in");
+    }
+  }, [status, router]);
 
   const utils = api.useContext();
   const createPost = api.post.create.useMutation({
@@ -35,9 +41,13 @@ export default function CreatePost() {
     }
   );
 
-//   if (!session) {
-//     return <p>Please log in to create posts.</p>;
-//   }
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   return (
     <form
@@ -96,8 +106,9 @@ export default function CreatePost() {
           ))}
         </div>
         {gifUrl && (
-          <p className="mt-2 text-sm text-blue-500">Selected GIF:
-          <img src={gifUrl}></img>
+          <p className="mt-2 text-sm text-blue-500">
+            Selected GIF:
+            <img src={gifUrl} alt="Selected GIF" />
           </p>
         )}
       </div>
