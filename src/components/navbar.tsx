@@ -20,6 +20,12 @@ export function Navbar() {
       <div className="flex items-center gap-5">
         {session ? (
           <div className="flex items-center gap-3">
+           <Link
+              href={`/settings/${session.user.name}`}
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:underline"
+            >
+              Settings
+            </Link>
             <Link href="/create">Create</Link>
               <img
                 src={session.user.image || "Avatar"}
