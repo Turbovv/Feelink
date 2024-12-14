@@ -13,7 +13,6 @@ datasource db {
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
 }
-
 model Post {
   id          String   @id @default(cuid())
   title       String
@@ -23,7 +22,32 @@ model Post {
   createdById String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  Comment Comment[]
 }
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    posts         Post[]
+
+    Comment Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  createdBy User     @relation(fields: [createdById], references: [id])
+  createdById String
+}
+
 
 // Necessary for Next auth
 model Account {
@@ -51,17 +75,6 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
 }
 
 model VerificationToken {
