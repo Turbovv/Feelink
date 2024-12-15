@@ -35,32 +35,45 @@ export const postRouter = createTRPCRouter({
       },
     });
   }),
-
-    getById: protectedProcedure
-    .input(
-      z.object({
-        id: z.string().min(1),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const post = await ctx.db.post.findUnique({
-        where: { id: input.id },
-        include: {
-          Comment: {
-            include: {
-              createdBy: true,
-            },
+  getById: publicProcedure
+  .input(
+    z.object({
+      id: z.string().min(1),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const post = await ctx.db.post.findUnique({
+      where: { id: input.id },
+      include: {
+        Comment: {
+          include: {
+            createdBy: true,
           },
         },
+      },
+    });
+
+    if (!post) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Post not found",
       });
-  
-      if (!post) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Post not found",
-        });
-      }
-  
-      return post;
-    }),
+    }
+
+    return {
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      gifUrl: post.gifUrl,
+      createdAt: post.createdAt,
+      comments: post.Comment.map((comment) => ({
+        id: comment.id,
+        content: comment.content,
+        createdAt: comment.createdAt,
+        createdBy: {
+          name: comment.createdBy.name,
+        },
+      })),
+    };
+  }),
 });
