@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Navbar } from "../components/navbar";
 import { ThemeProvider } from "../provider/theme-provider";
+import { SidebarProvider } from "~/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -27,8 +28,14 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <SidebarProvider>
+
+
+                <div className="grid absolute w-full">
               <Navbar />
               {children}
+                </div>
+              </SidebarProvider>
             </ThemeProvider>
           </TRPCReactProvider>
         </SessionProvider>
@@ -36,3 +43,4 @@ export default function RootLayout({
     </html>
   );
 }
+

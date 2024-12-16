@@ -4,7 +4,9 @@ import { ModeToggle } from "./ui/mode-toggle";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import SignOut from "./sign-out";
+import { AppSidebar } from "../components/app-sidebar";
+import { CustomTrigger } from "./custom-trigger";
+import React from "react";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -15,32 +17,25 @@ export function Navbar() {
   }
 
   return (
-    <div className="flex h-16 items-center justify-between px-16">
-      <Link href="/">Feelink</Link>
-      <div className="flex items-center gap-5">
+    <div className="flex h-16 w-full items-center justify-between px-4">
+      <Link href="/" className="text-lg font-semibold">
+        Feelink
+      </Link>
+
+      <div className="flex items-center gap-4">
+        <AppSidebar />
+        <ModeToggle />
+        <CustomTrigger />
         {session ? (
-          <div className="flex items-center gap-3">
-           <Link
-              href={`/settings/${session.user.name}`}
-              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:underline"
-            >
-              Settings
-            </Link>
-            <Link href="/create">Create</Link>
-              <img
-                src={session.user.image || "Avatar"}
-                alt={session.user.name || "User"}
-                className="h-8 w-8 rounded-full"
-              />
-            <span>{session.user?.name}</span>
-            <SignOut />
-          </div>
+          <div className="flex items-center gap-3"></div>
         ) : (
-          <Link href="/auth/sign-in" >
-            <p>Sign In</p>
+          <Link
+            href="/auth/sign-in"
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:underline dark:text-gray-200"
+          >
+            Sign In
           </Link>
         )}
-        <ModeToggle />
       </div>
     </div>
   );
