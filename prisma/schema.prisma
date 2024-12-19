@@ -24,6 +24,8 @@ model Post {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   Comment     Comment[]
+
+  Like Like[]
 }
 
 model User {
@@ -39,6 +41,8 @@ model User {
   Comment   Comment[]
   following UserFollowing[] @relation("UserToFollowing")
   followers UserFollowing[] @relation("UserToFollower")
+
+  Like Like[]
 }
 
 model UserFollowing {
@@ -62,7 +66,16 @@ model Comment {
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
 }
+model Like {
+  userId  String
+  postId  String
+  createdAt DateTime @default(now())
 
+  user   User   @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id])
+
+  @@id([userId, postId])
+}
 // Necessary for Next auth
 model Account {
   id                       String  @id @default(cuid())

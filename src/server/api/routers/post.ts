@@ -72,6 +72,7 @@ export const postRouter = createTRPCRouter({
         createdAt: comment.createdAt,
         createdBy: {
           name: comment.createdBy.name,
+          image: comment.createdBy.image
         },
       })),
     };

@@ -2,11 +2,12 @@
 
 import { useParams } from "next/navigation";
 import { api } from "~/trpc/react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { ArrowLeft } from "lucide-react";
-import { formatDate } from "../lib/format";
+import { ArrowLeft, MessageCircle } from "lucide-react";
+import { formatDate } from "../../lib/format";
+import { LikeButton } from "./LikeButton/like";
 
 export default function InnerPage() {
   const { data: session } = useSession();
@@ -22,7 +23,9 @@ export default function InnerPage() {
     isError,
     refetch,
   } = api.post.getById.useQuery({ id });
+  const { data: likeStatus, } = api.like.getLikeStatus.useQuery({ postId: id });
 
+  const { data: likeCount, isLoading: isLikeCountLoading, refetch: refetchLikes } = api.like.getLikeCount.useQuery({ postId: id });
   const [commentContent, setCommentContent] = useState("");
 
   const { mutate: createComment } = api.comment.createComment.useMutation({
@@ -59,10 +62,10 @@ export default function InnerPage() {
         <div className="mb-5 ml-5 mt-5 flex items-start space-x-3">
           <img
             className="h-10 w-10 rounded-full"
-            src={session?.user.image || "Avatar"}
+            src={post.comments?.[0]?.createdBy.image || "Avatar"}
           />
           <div>
-            <p className="">{session?.user.name}</p>
+            <p>{post.comments?.[0]?.createdBy.name}</p>
           </div>
         </div>
 
@@ -75,6 +78,20 @@ export default function InnerPage() {
             className="mb-3 w-full rounded-2xl"
           />
           <p>{formatDate(post.createdAt, true)}</p>
+          <div className="flex items-center gap-5">
+          <p className="flex items-center gap-2">
+          <MessageCircle />
+            {post.comments.length}
+            </p>
+          <div className="flex items-center gap-2">
+          <LikeButton
+              postId={post.id}
+              isLiked={likeStatus?.liked ?? false}
+              refetchLikes={refetchLikes}
+            />
+            <span className="text-sm text-gray-600">{likeCount}</span>
+          </div>
+          </div>
         </div>
       </div>
 
@@ -85,7 +102,7 @@ export default function InnerPage() {
         />
         <p className="absolute left-14 top-4">
           Replying to{" "}
-          <span className="text-blue-500">@{session?.user.name}</span>
+          <span  className="text-blue-500">@{post.comments?.[0]?.createdBy.name}</span>
         </p>
         <textarea
           className="w-full resize-none rounded border border-gray-300 p-14 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -128,7 +145,7 @@ export default function InnerPage() {
               <div className="flex items-start space-x-3">
                 <img
                   className="h-10 w-10 rounded-full"
-                  src={session?.user.image || "Avatar"}
+                  src={comment.createdBy.image || "Avatar"}
                 />
                 <div>
                   <p className="font-semibold">{comment.createdBy.name}</p>
