@@ -12,11 +12,19 @@ export const postRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
       include: {
         createdBy: true,
+        Comment: true,
+        _count: {
+          select: {
+            Like: true,
+          },
+        },
       },
     });
-    return posts;
 
+    return posts
+    
   }),
+  
   create: protectedProcedure
   .input(
     z.object({

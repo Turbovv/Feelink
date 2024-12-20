@@ -1,23 +1,28 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const likeRouter = createTRPCRouter({
-  getLikeStatus: protectedProcedure
+ getLikeStatus: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
+      if (!ctx.session?.user) {
+
+        return { liked: false };
+      }
+
       const like = await ctx.db.like.findUnique({
         where: {
           userId_postId: {
             userId: ctx.session.user.id,
             postId: input.postId,
           },
-        }
-    })
-      
+        },
+      });
+
       return { liked: !!like };
     }),
-    getLikeCount: protectedProcedure
+    getLikeCount: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const likeCount = await ctx.db.like.count({
