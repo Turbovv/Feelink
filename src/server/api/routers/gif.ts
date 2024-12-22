@@ -21,7 +21,7 @@ export const gifRouter = createTRPCRouter({
       const response = await fetch(
         `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(
           input.query
-        )}&limit=100`
+        )}&limit=20`
       );
 
       if (!response.ok) {

@@ -71,7 +71,6 @@ export default function InnerPage() {
 
         <div className="p-5">
           <h1 className="mb-4">{post.title}</h1>
-          <p className="mb-6">{post.description}</p>
           <img
             src={post.gifUrl}
             alt="GIF"
@@ -95,7 +94,7 @@ export default function InnerPage() {
         </div>
       </div>
 
-      <div className="relative w-full">
+      <div className="relative w-full ">
         <img
           className="absolute left-2 top-12 h-10 w-10 rounded-full"
           src={session?.user.image || "Avatar"}

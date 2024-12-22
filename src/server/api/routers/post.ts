@@ -29,7 +29,6 @@ export const postRouter = createTRPCRouter({
   .input(
     z.object({
       title: z.string().min(1),
-      description: z.string().min(1),
       gifUrl: z.string().url().optional(),
     })
   )
@@ -37,7 +36,6 @@ export const postRouter = createTRPCRouter({
     return ctx.db.post.create({
       data: {
         title: input.title,
-        description: input.description,
         gifUrl: input.gifUrl ?? "",
         createdBy: { connect: { id: ctx.session.user.id } },
       },
@@ -71,7 +69,6 @@ export const postRouter = createTRPCRouter({
     return {
       id: post.id,
       title: post.title,
-      description: post.description,
       gifUrl: post.gifUrl,
       createdAt: post.createdAt,
       comments: post.Comment.map((comment) => ({
