@@ -8,13 +8,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import GifModal from "./GifModal/GifModal";
 
 export default function CreatePost() {
   const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [gifUrl, setGifUrl] = useState("");
-  const [gifQuery, setGifQuery] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -33,13 +33,6 @@ export default function CreatePost() {
       router.push("/");
     },
   });
-
-  const { data: gifResults = [], refetch } = api.gif.search.useQuery(
-    { query: gifQuery },
-    {
-      enabled: false,
-    }
-  );
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -83,37 +76,27 @@ export default function CreatePost() {
       </div>
 
       <div>
-        <Label htmlFor="gifSearch">Search GIF</Label>
-        <Input
-          id="gifSearch"
-          type="text"
-          placeholder="Search for a GIF (e.g., 'Batman')"
-          value={gifQuery}
-          onChange={(e) => setGifQuery(e.target.value)}
-          onBlur={() => refetch()}
-        />
-        <div className="mt-4 flex flex-wrap gap-2">
-          {gifResults.map((gif: any) => (
-            <img
-              key={gif.id}
-              src={gif.url}
-              alt="GIF"
-              className={`h-24 w-24 cursor-pointer rounded border ${
-                gifUrl === gif.url ? "border-blue-500" : "border-gray-300"
-              }`}
-              onClick={() => setGifUrl(gif.url)}
-            />
-          ))}
-        </div>
+        <GifModal onGifSelect={setGifUrl} />
         {gifUrl && (
-          <p className="mt-2 text-sm text-blue-500">
-            Selected GIF:
-            <img src={gifUrl} alt="Selected GIF" />
-          </p>
+          <div className="relative mt-4 inline-block">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -top-2 -right-2 bg-red-500 text-white hover:bg-red-600"
+              onClick={() => setGifUrl("")}
+            >
+              X
+            </Button>
+            <img
+              src={gifUrl}
+              alt="Selected GIF"
+              className="h-32 w-32 rounded-md border border-gray-300"
+            />
+          </div>
         )}
       </div>
 
-      <Button type="submit" className="" disabled={createPost.isPending}>
+      <Button type="submit" disabled={createPost.isPending}>
         {createPost.isPending ? "Submitting..." : "Submit"}
       </Button>
     </form>
