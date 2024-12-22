@@ -25,9 +25,8 @@ export function Navbar() {
       <div className="flex items-center gap-4">
         <AppSidebar />
         <ModeToggle />
-        <CustomTrigger />
         {session ? (
-          <div className="flex items-center gap-3"></div>
+        <CustomTrigger />
         ) : (
           <Link
             href="/auth/sign-in"

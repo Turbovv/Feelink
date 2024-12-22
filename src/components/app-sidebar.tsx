@@ -26,7 +26,7 @@ export function AppSidebar() {
   const items = [
     {
       title: "Settings",
-      url: session?.user?.name ? `/settings/${session.user.name}` : "/settings",
+      url: session?.user?.name ? `/settings/${session.user.name}` : "/",
       icon: Settings,
     },
     {
