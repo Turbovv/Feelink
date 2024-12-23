@@ -23,9 +23,13 @@ export default function InnerPage() {
     isError,
     refetch,
   } = api.post.getById.useQuery({ id });
-  const { data: likeStatus, } = api.like.getLikeStatus.useQuery({ postId: id });
+  const { data: likeStatus } = api.like.getLikeStatus.useQuery({ postId: id });
 
-  const { data: likeCount, isLoading: isLikeCountLoading, refetch: refetchLikes } = api.like.getLikeCount.useQuery({ postId: id });
+  const {
+    data: likeCount,
+    isLoading: isLikeCountLoading,
+    refetch: refetchLikes,
+  } = api.like.getLikeCount.useQuery({ postId: id });
   const [commentContent, setCommentContent] = useState("");
 
   const { mutate: createComment } = api.comment.createComment.useMutation({
@@ -51,15 +55,15 @@ export default function InnerPage() {
 
   return (
     <div className="container mx-auto max-w-2xl">
-      <div className="border border-red-500">
-        <div className="flex items-center gap-8">
-          <Button variant={"outline"} onClick={() => history.back()}>
+      <div className="border border-red-500 p-5">
+        <div className="flex items-center gap-5">
+          <Button variant={"ghost"} onClick={() => history.back()}>
             <ArrowLeft />
           </Button>
           <h1 className="text-2xl">Post</h1>
         </div>
 
-        <div className="mb-5 ml-5 mt-5 flex items-start space-x-3">
+        <div className="mb-5 mt-5 flex items-start space-x-3">
           <img
             className="h-10 w-10 rounded-full"
             src={post.comments?.[0]?.createdBy.image || "Avatar"}
@@ -69,7 +73,7 @@ export default function InnerPage() {
           </div>
         </div>
 
-        <div className="p-5">
+        <div className="">
           <h1 className="mb-4">{post.title}</h1>
           <img
             src={post.gifUrl}
@@ -78,30 +82,32 @@ export default function InnerPage() {
           />
           <p>{formatDate(post.createdAt, true)}</p>
           <div className="flex items-center gap-5">
-          <p className="flex items-center gap-2">
-          <MessageCircle />
-            {post.comments.length}
+            <p className="flex items-center gap-2">
+              <MessageCircle />
+              {post.comments.length}
             </p>
-          <div className="flex items-center gap-2">
-          <LikeButton
-              postId={post.id}
-              isLiked={likeStatus?.liked ?? false}
-              refetchLikes={refetchLikes}
-            />
-            <span className="text-sm text-gray-600">{likeCount}</span>
-          </div>
+            <div className="flex items-center gap-2">
+              <LikeButton
+                postId={post.id}
+                isLiked={likeStatus?.liked ?? false}
+                refetchLikes={refetchLikes}
+              />
+              <span className="text-sm text-gray-600">{likeCount}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="relative w-full ">
+      <div className="relative w-full">
         <img
           className="absolute left-2 top-12 h-10 w-10 rounded-full"
           src={session?.user.image || "Avatar"}
         />
         <p className="absolute left-14 top-4">
           Replying to{" "}
-          <span  className="text-blue-500">@{post.comments?.[0]?.createdBy.name}</span>
+          <span className="text-blue-500">
+            @{post.comments?.[0]?.createdBy.name}
+          </span>
         </p>
         <textarea
           className="w-full resize-none rounded border border-gray-300 p-14 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -131,7 +137,7 @@ export default function InnerPage() {
         </button>
       </div>
 
-      <div className=" border border-blue-500">
+      <div className="border border-blue-500">
         <div className="">
           {post.comments?.map((comment: any) => (
             <div
@@ -148,7 +154,9 @@ export default function InnerPage() {
                 />
                 <div>
                   <p className="font-semibold">{comment.createdBy.name}</p>
-                  <p className="mt-2 text-sm text-gray-600">{comment.content}</p>
+                  <p className="mt-2 text-sm text-gray-600">
+                    {comment.content}
+                  </p>
                 </div>
                 <p>{formatDate(comment.createdAt, false)}</p>
               </div>

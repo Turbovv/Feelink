@@ -32,8 +32,8 @@ export default function GifModal({ onGifSelect }: GifPickerProps) {
 
   return (
     <>
-      <Button variant="outline" onClick={() => setIsOpen(true)}>
-      <FilmIcon className="h-5 w-5" />
+      <Button variant="ghost" onClick={() => setIsOpen(true)}>
+      <FilmIcon className="border-2 border-blue-500" />
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -47,7 +47,7 @@ export default function CreatePost() {
 
   return (
     <form
-      className="space-y-6 container mx-auto max-w-xl"
+      className="space-y-6"
       onSubmit={(e) => {
         e.preventDefault();
         if (title.trim() || gifUrl.trim()) {
@@ -55,11 +55,11 @@ export default function CreatePost() {
         }
       }}
     >
-      <div className="relative border border-gray-300 rounded-lg p-4">
+      <div className="relative rounded-lg border border-gray-300 p-4">
         <div className="flex flex-col gap-4">
           <textarea
             ref={textareaRef}
-            className="resize-none w-full bg-transparent focus:outline-none"
+            className="w-full resize-none bg-transparent focus:outline-none"
             placeholder="What is Happening?!"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -76,7 +76,7 @@ export default function CreatePost() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 dark:bg-white bg-black rounded-full dark:text-black text-white "
+                className="absolute right-2 top-2 rounded-full bg-black text-white dark:bg-white dark:text-black"
                 onClick={() => setGifUrl("")}
               >
                 X
@@ -84,12 +84,12 @@ export default function CreatePost() {
             </div>
           )}
         </div>
-        <div className="flex mt-5 justify-between">
+        <div className="mt-5 flex justify-between">
           <GifModal onGifSelect={setGifUrl} />
           <Button
             className="rounded-3xl px-5 py-2"
             type="submit"
-            disabled={!title.trim() && !gifUrl.trim() || createPost.isPending}
+            disabled={(!title.trim() && !gifUrl.trim()) || createPost.isPending}
           >
             {createPost.isPending ? "Submitting..." : "Post"}
           </Button>

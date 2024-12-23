@@ -24,15 +24,15 @@ export const formatDate = (isoDate: string, displayTimeAndDate: boolean = false)
       const hoursAgo = Math.floor(timeDifference / (60 * 60 * 1000));
       
       if (secondsAgo < 60) {
-        return `${secondsAgo}s ago`;
+        return `${secondsAgo}s`;
       } else if (minutesAgo < 60) {
-        return `${minutesAgo}min ago`;
+        return `${minutesAgo}min`;
       } else {
-        return `${hoursAgo}h ago`;
+        return `${hoursAgo}h`;
       }
     } else if (timeDifference < oneMonth) {
       const daysAgo = Math.floor(timeDifference / oneDay);
-      return `${daysAgo}d ago`;
+      return `${daysAgo}d`;
     } else {
       const month = postDate.toLocaleString("en-US", { month: "short" });
       const year = postDate.getFullYear();
