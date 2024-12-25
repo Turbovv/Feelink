@@ -27,26 +27,26 @@ const FollowersPage: React.FC = () => {
         {isLoading ? (
           <div>Loading...</div>
         ) : followers?.length ? (
-          followers.map((followers) => (
-            <div key={followers.userId} className="font-semibold">
+          followers.map((follower) => (
+            <div key={follower.userId} className="font-semibold">
               <div className="flex justify-between items-center border-b py-4">
                 <div className="flex items-center gap-2">
                   <img
                     className="w-12 h-12 rounded-full"
-                    src={followers.user.image || "/default-avatar.png"}
-                    alt={followers.user.name}
+                    src={follower.user.image || "/default-avatar.png"}
+                    alt={follower.user.name}
                   />
                   <Link
-                    href={`/settings/${followers.user.name}`}
+                    href={`/settings/${follower.user.name}`}
                     className="hover:underline"
                   >
-                    {followers.user.name}
+                    {follower.user.name}
                   </Link>
                 </div>
-                {session?.user?.id !== followers.userId && (
+                {session?.user?.id !== follower.userId && (
                   <FollowUnfollowButton
-                    userId={followers.userId}
-                    isFollowing={followers.isFollowing || false}
+                    userId={follower.userId}
+                    isFollowing={follower.isFollowing || false}
                   />
                 )}
               </div>

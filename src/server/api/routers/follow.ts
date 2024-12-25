@@ -3,14 +3,39 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const followRouter = createTRPCRouter({
-  getFollowing: protectedProcedure
+  getFollowingWithStatus: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.userFollowing.findMany({
+      const userId = ctx.session.user.id;
+
+      const following = await ctx.db.userFollowing.findMany({
         where: { userId: input.userId },
-        include: { following: true },
+        include: {
+          following: true,
+        },
       });
+
+      const followingWithStatus = await Promise.all(
+        following.map(async (entry) => {
+          const isFollowingBack = await ctx.db.userFollowing.findUnique({
+            where: {
+              userId_followingId: {
+                userId: entry.following.id,
+                followingId: userId,
+              },
+            },
+          });
+
+          return {
+            ...entry,
+            isFollowingBack: !!isFollowingBack,
+          };
+        })
+      );
+
+      return followingWithStatus;
     }),
+
 
     getFollowers: protectedProcedure
     .input(z.object({ userId: z.string() }))
