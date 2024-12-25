@@ -24,6 +24,7 @@ const Settings: React.FC = () => {
   if (isLoading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
   
+  const isCurrentUser = session?.user?.id === user.id;
 
   return (
     <div className="container mx-auto mt-8 px-4 sm:px-6">
@@ -40,10 +41,17 @@ const Settings: React.FC = () => {
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
             <div className="flex gap-2 mt-2 mb-2">
+            <a
+                href={`/settings/${user.name}/followers`}
+                className="text-blue-500 hover:underline"
+              >
             <p className="text-sm text-gray-600">{user.followers?.length || 0} Followers</p>
+              </a>
             <p className="text-sm text-gray-600">{user.following?.length || 0} Following</p>
             </div>
-            <FollowUnfollowButton userId={user.id} isFollowing={user.isFollowing || false} />
+            {!isCurrentUser && session?.user?.id !== user.id && (
+                     <FollowUnfollowButton userId={user.id} isFollowing={user.isFollowing || false} />
+                )}
           </div>
         </div>
 
@@ -66,13 +74,13 @@ const Settings: React.FC = () => {
                   >
                     <div className="flex items-start gap-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 shadow-sm transition duration-200 hover:bg-gray-100 dark:hover:bg-gray-800">
                       <img
-                        src={session?.user?.image || "/default-avatar.png"}
+                        src={user.image || "/default-avatar.png"}
                         alt="Avatar"
                         className="mb-4 h-12 w-12 rounded-full object-cover shadow-md"
                       />
                       <div className="flex-1">
                         <div className="flex gap-1 items-center">
-                          <p className="text-gray-800 dark:text-gray-200">{session?.user.name}</p>
+                          <p className="text-gray-800 dark:text-gray-200">{user.name}</p>
                           <span className="text-gray-500 dark:text-gray-400">·</span>
                           <p className="text-sm text-gray-600 dark:text-gray-400">{formatDate(post.createdAt)}</p>
                         </div>

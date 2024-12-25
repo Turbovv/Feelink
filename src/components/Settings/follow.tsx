@@ -1,22 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { api } from "~/trpc/react"; 
+import { api } from "~/trpc/react";
 
 interface FollowUnfollowButtonProps {
-  userId: string; 
+  userId: string;
   isFollowing: boolean;
 }
 
 export const FollowUnfollowButton: React.FC<FollowUnfollowButtonProps> = ({ userId, isFollowing }) => {
   const [following, setFollowing] = useState(isFollowing);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const utils = api.useContext(); 
+  const utils = api.useContext();
 
   const followMutation = api.follow.followUser.useMutation({
     onSuccess: () => {
       setFollowing(true);
-      utils.userpost.getUserByUsername.invalidate(); 
+      utils.userpost.getUserByUsername.invalidate();
     },
     onError: (error) => {
       console.error("Follow error:", error);
@@ -44,11 +45,17 @@ export const FollowUnfollowButton: React.FC<FollowUnfollowButtonProps> = ({ user
   return (
     <button
       onClick={following ? handleUnfollow : handleFollow}
-      className={`px-4 py-2 text-white font-semibold rounded ${
-        following ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`px-4 py-2 font-semibold rounded-full transition-colors duration-300 ${
+        following
+          ? isHovered
+            ? "border border-red-500 text-red-500"
+            : "bg-black text-white"
+          : "bg-white text-black border"
       }`}
     >
-      {following ? "Unfollow" : "Follow"}
+      {following ? (isHovered ? "Unfollow" : "Following") : "Follow"}
     </button>
   );
 };
