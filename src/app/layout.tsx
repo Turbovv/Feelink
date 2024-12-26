@@ -19,7 +19,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${GeistSans.variable}`}>
-      <body>
+      <body className="dark:bg-black">
       <SessionProvider>
           <TRPCReactProvider>
             <ThemeProvider
@@ -29,8 +29,6 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <SidebarProvider>
-
-
                 <div className="grid absolute w-full">
               <Navbar />
               {children}

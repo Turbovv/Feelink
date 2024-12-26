@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import SignOut from "./sign-out";
 import React from "react";
+import Link from "next/link";
 export function AppSidebar() {
   const { toggleSidebar } = useSidebar();
   const { data: session } = useSession();
@@ -65,13 +66,13 @@ export function AppSidebar() {
                     <item.component />
                   ) : (
                     <SidebarMenuButton asChild>
-                      <a
+                      <Link
                         href={item.url}
                         className="flex items-center gap-3 p-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                       >
                         <item.icon className="w-5 h-5" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>

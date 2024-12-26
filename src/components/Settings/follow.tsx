@@ -51,7 +51,7 @@ export const FollowUnfollowButton: React.FC<FollowUnfollowButtonProps> = ({ user
         following
           ? isHovered
             ? "border border-red-500 text-red-500"
-            : "bg-black text-white"
+            : "bg-black border text-white"
           : "bg-white text-black border"
       }`}
     >
