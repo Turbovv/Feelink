@@ -8,6 +8,8 @@ import {
 
 export const postRouter = createTRPCRouter({
   Posts: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session?.user?.id;
+  
     const posts = await ctx.db.post.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -18,12 +20,24 @@ export const postRouter = createTRPCRouter({
             Like: true,
           },
         },
+        Like: userId
+          ? {
+              where: {
+                userId: userId,
+              },
+              select: {
+                userId: true,
+              },
+            }
+          : false,
       },
     });
-
-    return posts
-    
+    return posts.map((post) => ({
+      ...post,
+      isLiked: post.Like?.some((like) => like.userId === userId) || false,
+    }));
   }),
+  
   
   create: protectedProcedure
   .input(
@@ -51,6 +65,7 @@ export const postRouter = createTRPCRouter({
     const post = await ctx.db.post.findUnique({
       where: { id: input.id },
       include: {
+        createdBy: true,
         Comment: {
           include: {
             createdBy: true,
@@ -71,15 +86,20 @@ export const postRouter = createTRPCRouter({
       title: post.title,
       gifUrl: post.gifUrl,
       createdAt: post.createdAt,
+      createdBy: {
+        name: post.createdBy.name,
+        image: post.createdBy.image,
+      },
       comments: post.Comment.map((comment) => ({
         id: comment.id,
         content: comment.content,
         createdAt: comment.createdAt,
         createdBy: {
           name: comment.createdBy.name,
-          image: comment.createdBy.image
+          image: comment.createdBy.image,
         },
       })),
     };
   }),
+
 });

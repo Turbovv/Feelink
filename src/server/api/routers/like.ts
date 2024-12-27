@@ -26,7 +26,7 @@ export const likeRouter = createTRPCRouter({
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const likeCount = await ctx.db.like.count({
-        where: {
+        where: {  
           postId: input.postId,
         },
       });

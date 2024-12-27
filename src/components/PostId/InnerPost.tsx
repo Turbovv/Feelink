@@ -66,10 +66,10 @@ export default function InnerPage() {
         <div className="mb-5 mt-5 flex items-start space-x-3">
           <img
             className="h-10 w-10 rounded-full"
-            src={post.comments?.[0]?.createdBy.image || "Avatar"}
+            src={post.createdBy.image || "Avatar"}
           />
           <div>
-            <p>{post.comments?.[0]?.createdBy.name}</p>
+            <p>{post.createdBy.name}</p>
           </div>
         </div>
 
@@ -106,7 +106,7 @@ export default function InnerPage() {
         <p className="absolute left-14 top-4">
           Replying to{" "}
           <span className="text-blue-500">
-            @{post.comments?.[0]?.createdBy.name}
+            @{post.createdBy.name}
           </span>
         </p>
         <textarea
