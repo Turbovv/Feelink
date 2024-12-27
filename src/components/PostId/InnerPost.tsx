@@ -73,13 +73,28 @@ export default function InnerPage() {
           </div>
         </div>
 
-        <div className="">
+        <div>
           <h1 className="mb-4">{post.title}</h1>
-          <img
-            src={post.gifUrl}
-            alt="GIF"
-            className="mb-3 w-full rounded-2xl"
-          />
+          {post.gifUrl && (
+            <img
+              src={post.gifUrl}
+              alt="Gif"
+              className="mt-2 w-full  rounded-lg border border-gray-200 dark:border-gray-700"
+            />
+          )}
+
+          {post.imageUrls?.length > 0 && (
+            <div className="mt-5 grid grid-cols-3 gap-4">
+              {post.imageUrls.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-auto rounded-lg"
+                />
+              ))}
+            </div>
+          )}
           <p>{formatDate(post.createdAt, true)}</p>
           <div className="flex items-center gap-5">
             <p className="flex items-center gap-2">
@@ -125,11 +140,10 @@ export default function InnerPage() {
           }}
         />
         <button
-          className={`absolute right-2 rounded bg-blue-500 px-4 py-2 text-white transition-all hover:bg-blue-600 ${
-            commentContent.trim()
+          className={`absolute right-2 rounded bg-blue-500 px-4 py-2 text-white transition-all hover:bg-blue-600 ${commentContent.trim()
               ? "visible bottom-5 opacity-100"
               : "invisible -bottom-4 opacity-0"
-          }`}
+            }`}
           onClick={handleCommentSubmit}
           disabled={!commentContent.trim()}
         >

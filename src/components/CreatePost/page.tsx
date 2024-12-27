@@ -6,11 +6,13 @@ import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import GifModal from "./GifModal/GifModal";
+import UploadThing from "./UploadThing/UploadThing"; 
 
 export default function CreatePost() {
   const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [gifUrl, setGifUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]); // Track multiple image URLs
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -26,6 +28,7 @@ export default function CreatePost() {
       await utils.post.invalidate();
       setTitle("");
       setGifUrl("");
+      setImageUrls([]);
       router.push("/");
     },
   });
@@ -35,6 +38,10 @@ export default function CreatePost() {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
+  };
+
+  const removeImage = (index: number) => {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
   if (status === "loading") {
@@ -50,8 +57,8 @@ export default function CreatePost() {
       className="space-y-6"
       onSubmit={(e) => {
         e.preventDefault();
-        if (title.trim() || gifUrl.trim()) {
-          createPost.mutate({ title, gifUrl });
+        if (title.trim() || gifUrl.trim() || imageUrls.length > 0) {
+          createPost.mutate({ title, gifUrl, imageUrls });
         }
       }}
     >
@@ -83,13 +90,43 @@ export default function CreatePost() {
               </Button>
             </div>
           )}
+
+          {imageUrls.length > 0 && (
+            <div className="grid grid-cols-2 gap-4">
+              {imageUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Uploaded image ${index + 1}`}
+                    className="w-full h-48 rounded-lg"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-2 rounded-full bg-black text-white dark:bg-white dark:text-black"
+                    onClick={() => removeImage(index)}
+                  >
+                    X
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
         <div className="mt-5 flex justify-between">
           <GifModal onGifSelect={setGifUrl} />
+          
+          <UploadThing
+            onUploadComplete={(files) => {
+              setImageUrls((prev) => [...prev, ...files.map((file) => file.url)]);
+            }}
+            onUploadError={(error) => alert(error.message)}
+          />
           <Button
             className="rounded-3xl px-5 py-2"
             type="submit"
-            disabled={(!title.trim() && !gifUrl.trim()) || createPost.isPending}
+            disabled={(!title.trim() && !gifUrl.trim() && imageUrls.length === 0) || createPost.isPending}
           >
             {createPost.isPending ? "Submitting..." : "Post"}
           </Button>

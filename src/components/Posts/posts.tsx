@@ -37,7 +37,6 @@ export function Posts() {
           {posts.map((post) => (
             <div
               key={post.id}
-              // href={`/posts/${post.id}`}
               className="text-lg font-semibold"
             >
               <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-md transition hover:shadow-lg dark:bg-neutral-900 dark:hover:shadow-xl">
@@ -68,6 +67,18 @@ export function Posts() {
                           alt="Gif"
                           className="mt-2 w-full  rounded-lg border border-gray-200 dark:border-gray-700"
                         />
+                      )}
+                      {post.imageUrls && post.imageUrls.length > 0 && (
+                        <div className="mt-2 grid grid-cols-2 gap-4">
+                          {post.imageUrls.map((url, index) => (
+                            <img
+                              key={index}
+                              src={url}
+                              alt={`Uploaded image ${index + 1}`}
+                              className="w-full h-48 rounded-lg object-cover"
+                            />
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>

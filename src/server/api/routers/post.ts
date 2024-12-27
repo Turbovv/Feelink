@@ -43,7 +43,18 @@ export const postRouter = createTRPCRouter({
   .input(
     z.object({
       title: z.string().min(1),
-      gifUrl: z.string().url().optional(),
+      gifUrl: z
+        .string()
+        .optional()
+        .refine((url) => url === "" || /^https?:\/\//.test(url), {
+          message: "Invalid gif URL",
+        }),
+      imageUrls: z
+        .array(z.string().url())
+        .optional()
+        .refine((urls) => urls !== undefined && (urls.length === 0 || urls.every((url) => url)), {
+          message: "Invalid image URLs",
+        }),
     })
   )
   .mutation(async ({ ctx, input }) => {
@@ -51,10 +62,13 @@ export const postRouter = createTRPCRouter({
       data: {
         title: input.title,
         gifUrl: input.gifUrl ?? "",
+        imageUrls: input.imageUrls ?? [], 
         createdBy: { connect: { id: ctx.session.user.id } },
       },
     });
   }),
+
+
   getById: publicProcedure
   .input(
     z.object({
@@ -85,6 +99,7 @@ export const postRouter = createTRPCRouter({
       id: post.id,
       title: post.title,
       gifUrl: post.gifUrl,
+      imageUrls: post.imageUrls,
       createdAt: post.createdAt,
       createdBy: {
         name: post.createdBy.name,
