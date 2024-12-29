@@ -61,4 +61,33 @@ export const settingsRouter = createTRPCRouter({
         isFollowing,
       };
     }),
+    updateProfile: protectedProcedure
+    .input(
+      z.object({
+        image: z.string().url().optional(),
+        background: z.string().url().optional(),
+        description: z.string().max(500).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      const updatedUser = await ctx.db.user.update({
+        where: { id: userId },
+        data: {
+          image: input.image || undefined,
+          background: input.background || undefined,
+          description: input.description || undefined,
+        },
+      });
+
+      return {
+        success: true,
+        user: {
+          image: updatedUser.image,
+          background: updatedUser.background,
+          description: updatedUser.description,
+        },
+      };
+    }),
 });
