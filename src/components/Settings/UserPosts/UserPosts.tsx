@@ -1,57 +1,74 @@
 import Link from "next/link";
+import { MessageCircle } from "lucide-react";
+import { LikeButton } from "../../PostId/LikeButton/like";
 import { formatDate } from "~/lib/format";
 
-interface PostsListProps {
-  posts: Array<{
-    id: string;
-    title: string;
-    gifUrl?: any;
-    createdAt: any;
-    error?: any,
-  }>;
-  userImage: string | null;
-  userName: string | null;
-  isLoading: boolean;
-  error: Error | any;
-}
 
-function PostsList({ posts, userImage, userName, isLoading, error }: PostsListProps) {
+
+function PostsList({ posts, userImage, userName, isLoading, error, refetchLikes }: any) {
   return (
-    <div className="  shadow-md dark:bg-black dark:text-white">
-      <div className="flex justify-between w-full  border items-center px-20 p-2">
-      <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200 ">
-         Posts
-      </h2>
-      <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200 ">
-         Replies
-      </h2>
-      <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200 ">
-         Media
-      </h2>
+    <div className="shadow-md dark:bg-black dark:text-white">
+      <div className="flex justify-between w-full border-b border-red-500 items-center px-20 p-2">
+        <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Posts</h2>
+        <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Replies</h2>
       </div>
-
       {isLoading ? (
         <p className="text-gray-600 dark:text-gray-400">Loading your posts...</p>
       ) : error ? (
         <p className="text-red-500 dark:text-red-400">{error.message}</p>
       ) : (
-        <div className="space-y-6 ">
+        <div className="">
           {posts.length > 0 ? (
-            posts.map((post) => (
-              <Link key={post.id} href={`/posts/${post.id}`} className="text-lg font-semibold dark:hover:text-blue-400 ">
-                <div className="flex  gap-2  rounded-md  p-4 shadow-sm transition duration-200 dark:border dark:bg-black">
-                  <img src={userImage || "/default-avatar.png"} alt="Avatar" className="h-12 w-12 rounded-full object-cover shadow-md" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-800 dark:text-gray-200 hover:underline">{userName}</p>
-                      <span className="text-gray-500 dark:text-gray-400">·</span>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{formatDate(post.createdAt)}</p>
+            posts.map((post: any) => (
+              <div
+                key={post.id}
+                className="text-lg font-semibold dark:hover:text-blue-400 border"
+              >
+                <Link
+                  href={`/posts/${post.id}`}
+                  className="">
+                  <div className="rounded-md p-4 shadow-sm transition duration-200 ">
+                    <div className="flex gap-2 ">
+                      <img
+                        src={userImage || "/default-avatar.png"}
+                        alt="Avatar"
+                        className="h-12 w-12 rounded-full object-cover shadow-md"
+                      />
+                      <div className="flex  items-center gap-1 ">
+                        <p className="text-gray-800 dark:text-gray-200 hover:underline">{userName}</p>
+                        <span className="text-gray-500 dark:text-gray-400">·</span>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{formatDate(post.createdAt)}</p>
+                      </div>
                     </div>
-                    <p className="text-gray-800 dark:text-gray-200">{post.title}</p>
-                    {post.gifUrl && <img src={post.gifUrl} alt="GIF" className="mt-4 rounded-xl shadow-md w-full  border border-gray-200" />}
+                    <div className=" ml-14 ">
+                      <p className="text-gray-800 dark:text-gray-200 mb-4">{post.title}</p>
+                      {post.gifUrl && (
+                        <img
+                          src={post.gifUrl}
+                          alt="GIF"
+                          className=" rounded-xl shadow-md w-full"
+                        />
+                      )}
+                      <img src={post.imageUrls} alt="" />
+                    </div>
+
+                  </div>
+                </Link>
+                <div className="flex items-center px-20  gap-10">
+                  <p className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <MessageCircle />
+                    {post.Comment.length}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <LikeButton
+                      postId={post.id}
+                      isLiked={post.isLiked || false}
+                      refetchLikes={refetchLikes}
+                    />
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{post._count.Like}</span>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))
           ) : (
             <p className="text-gray-500 dark:text-gray-400">No posts found.</p>

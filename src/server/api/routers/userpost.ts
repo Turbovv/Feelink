@@ -3,15 +3,37 @@ import { z } from "zod";
 
 export const settingsRouter = createTRPCRouter({
   
-  getByUser: protectedProcedure
-  .query(async ({ ctx }) => {
+  getByUser: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+  
     const userPosts = await ctx.db.post.findMany({
-      where: { createdById: ctx.session.user.id },
+      where: { createdById: userId },
       orderBy: { createdAt: "desc" },
+      include: {
+        createdBy: true,
+        Comment: true,
+        _count: {
+          select: {
+            Like: true,
+          },
+        },
+        Like: {
+          where: {
+            userId: userId,
+          },
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
-
-    return userPosts;
+  
+    return userPosts.map((post) => ({
+      ...post,
+      isLiked: post.Like?.some((like) => like.userId === userId) || false,
+    }));
   }),
+  
   getUserByUsername: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ ctx, input }) => {
