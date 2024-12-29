@@ -16,7 +16,10 @@ function Settings() {
     username: username as string,
   });
 
-  const { data: posts, isLoading: postsLoading, error,  refetch: refetchLikes, } = api.userpost.getByUser.useQuery();
+  const { data: posts, isLoading: postsLoading, error, refetch: refetchLikes } =
+    api.userpost.getByUser.useQuery({
+      userId: user?.id || "",
+    });
 
   if (userLoading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
@@ -24,10 +27,17 @@ function Settings() {
   const isCurrentUser = session?.user?.id === user.id;
 
   return (
-    <div className="container border  mx-auto max-w-2xl">
+    <div className="container border mx-auto max-w-2xl">
       <div className="">
         <ProfileCard user={user} isCurrentUser={isCurrentUser} sessionUserId={session?.user?.id} />
-        <UserPosts posts={posts || []} userImage={user.image} userName={user.name} isLoading={postsLoading} error={error} refetchLikes={refetchLikes} />
+        <UserPosts
+          posts={posts || []}
+          userImage={user.image}
+          userName={user.name}
+          isLoading={postsLoading}
+          error={error}
+          refetchLikes={refetchLikes}
+        />
       </div>
     </div>
   );
