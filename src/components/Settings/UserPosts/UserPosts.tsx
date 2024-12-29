@@ -5,14 +5,14 @@ interface PostsListProps {
   posts: Array<{
     id: string;
     title: string;
-    description: string;
-    gifUrl?: string;
-    createdAt: string;
+    gifUrl?: any;
+    createdAt: any;
+    error?: any,
   }>;
   userImage: string | null;
   userName: string | null;
   isLoading: boolean;
-  error: Error | null;
+  error: Error | any;
 }
 
 function PostsList({ posts, userImage, userName, isLoading, error }: PostsListProps) {

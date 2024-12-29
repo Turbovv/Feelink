@@ -55,7 +55,7 @@ export function Posts() {
                           {post.createdBy.name}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {formatDate(post.createdAt, false)}
+                          {formatDate(post.createdAt.toString(), false)}
                         </p>
                       </div>
                       <p className="text-gray-800 dark:text-gray-200">

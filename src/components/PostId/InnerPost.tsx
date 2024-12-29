@@ -95,7 +95,7 @@ export default function InnerPage() {
               ))}
             </div>
           )}
-          <p>{formatDate(post.createdAt, true)}</p>
+         <p>{formatDate(post.createdAt.toString(), true)}</p>
           <div className="flex items-center gap-5">
             <p className="flex items-center gap-2">
               <MessageCircle />
