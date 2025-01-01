@@ -63,6 +63,8 @@ model UserFollowing {
 model Comment {
   id          String   @id @default(cuid())
   content     String
+  gifUrl      String? 
+  imageUrls   String[]
   createdAt   DateTime @default(now())
   postId      String
   post        Post     @relation(fields: [postId], references: [id])

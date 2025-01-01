@@ -12,7 +12,7 @@ export default function CreatePost() {
   const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [gifUrl, setGifUrl] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([]); // Track multiple image URLs
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 

@@ -146,6 +146,8 @@ export const postRouter = createTRPCRouter({
         id: comment.id,
         content: comment.content,
         createdAt: comment.createdAt,
+        gifUrl: comment.gifUrl,
+        imageUrls: comment.imageUrls, 
         createdBy: {
           id: comment.createdBy.id,
           name: comment.createdBy.name,
