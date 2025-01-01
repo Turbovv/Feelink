@@ -92,13 +92,13 @@ export default function CreatePost() {
           )}
 
           {imageUrls.length > 0 && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-wrap gap-4">
               {imageUrls.map((url, index) => (
                 <div key={index} className="relative">
                   <img
                     src={url}
                     alt={`Uploaded image ${index + 1}`}
-                    className="w-full h-48 rounded-lg"
+                    className=" w-full rounded-lg"
                   />
                   <Button
                     variant="ghost"

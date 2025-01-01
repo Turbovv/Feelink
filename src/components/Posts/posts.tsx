@@ -6,10 +6,14 @@ import { api } from "~/trpc/react";
 import { LikeButton } from "../PostId/LikeButton/like";
 import CreatePost from "../CreatePost/page";
 import { formatDate } from "~/lib/format";
+import { useSession } from "next-auth/react";
+import { DeletePost } from "../deletebutton";
 
 export function Posts() {
+  const { data: session } = useSession();
   const {
     data: posts,
+    refetch,
     isLoading,
     error,
     refetch: refetchLikes,
@@ -33,16 +37,16 @@ export function Posts() {
     <div className="mx-auto w-full max-w-2xl">
       <CreatePost />
       {posts && posts.length > 0 ? (
-        <ul className="space-y-4">
+        <div className="">
           {posts.map((post) => (
-            <div
-              key={post.id}
-              className="text-lg font-semibold"
-            >
+            <div key={post.id} className="text-lg font-semibold">
               <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-md transition hover:shadow-lg dark:bg-neutral-900 dark:hover:shadow-xl">
-                <Link
-                  href={`/posts/${post.id}`}
-                >
+              <div className="flex justify-end "> 
+               {session?.user.id === post.createdBy.id && (
+                  <DeletePost  postId={post.id} refetch={refetch} />
+                )}
+               </div>
+                <Link href={`/posts/${post.id}`}>
                   <div className="flex gap-2">
                     <img
                       className="h-14 w-14 rounded-full"
@@ -65,17 +69,17 @@ export function Posts() {
                         <img
                           src={post.gifUrl}
                           alt="Gif"
-                          className="mt-2 w-full  rounded-lg border border-gray-200 dark:border-gray-700"
+                          className="mt-2 w-full rounded-lg border border-gray-200 dark:border-gray-700"
                         />
                       )}
                       {post.imageUrls && post.imageUrls.length > 0 && (
-                        <div className="mt-2 grid grid-cols-2 gap-4">
+                        <div className="mt-2 flex   gap-4">
                           {post.imageUrls.map((url, index) => (
                             <img
                               key={index}
                               src={url}
                               alt={`Uploaded image ${index + 1}`}
-                              className="w-full h-48 rounded-lg object-cover"
+                              className="w-full h-full  rounded-lg object-cover"
                             />
                           ))}
                         </div>
@@ -83,7 +87,7 @@ export function Posts() {
                     </div>
                   </div>
                 </Link>
-
+             
                 <div className="mt-4 flex items-center gap-5">
                   <p className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <MessageCircle />
@@ -103,7 +107,7 @@ export function Posts() {
               </div>
             </div>
           ))}
-        </ul>
+        </div>
       ) : (
         <p className="text-center text-gray-500 dark:text-gray-400">
           No posts found.

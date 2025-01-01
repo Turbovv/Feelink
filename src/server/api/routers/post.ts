@@ -46,7 +46,7 @@ export const postRouter = createTRPCRouter({
       gifUrl: z
         .string()
         .optional()
-        .refine((url) => url === "" || /^https?:\/\//.test(url), {
+        .refine((url: any) => url === "" || /^https?:\/\//.test(url), {
           message: "Invalid gif URL",
         }),
       imageUrls: z
@@ -68,13 +68,49 @@ export const postRouter = createTRPCRouter({
     });
   }),
 
+  deletePost: protectedProcedure
+    .input(z.object({ postId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({
+        where: { id: input.postId },
+        select: { createdById: true },
+      });
 
-  getById: publicProcedure
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
+      }
+
+      if (post.createdById !== ctx.session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to delete this post",
+        });
+      }
+
+      await ctx.db.comment.deleteMany({
+        where: { postId: input.postId },
+      });
+
+      await ctx.db.like.deleteMany({
+        where: { postId: input.postId },
+      });
+
+      await ctx.db.post.delete({
+        where: { id: input.postId },
+      });
+
+      return { success: true, message: "Post deleted successfully" };
+    }),
+
+ getById: publicProcedure
   .input(
     z.object({
       id: z.string().min(1),
     })
-  )
+   )
   .query(async ({ ctx, input }) => {
     const post = await ctx.db.post.findUnique({
       where: { id: input.id },
@@ -102,6 +138,7 @@ export const postRouter = createTRPCRouter({
       imageUrls: post.imageUrls,
       createdAt: post.createdAt,
       createdBy: {
+        id: post.createdBy.id,
         name: post.createdBy.name,
         image: post.createdBy.image,
       },
@@ -110,6 +147,7 @@ export const postRouter = createTRPCRouter({
         content: comment.content,
         createdAt: comment.createdAt,
         createdBy: {
+          id: comment.createdBy.id,
           name: comment.createdBy.name,
           image: comment.createdBy.image,
         },
