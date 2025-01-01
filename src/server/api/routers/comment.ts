@@ -36,4 +36,35 @@ export const commentRouter = createTRPCRouter({
 
       return comment;
     }),
+
+  deleteComment: protectedProcedure
+    .input(z.object({
+      commentId: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const comment = await ctx.db.comment.findUnique({
+        where: { id: input.commentId },
+        include: { createdBy: true },
+      });
+
+      if (!comment) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
+      }
+
+      if (comment.createdBy.id !== ctx.session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You can only delete your own comments",
+        });
+      }
+
+      await ctx.db.comment.delete({
+        where: { id: input.commentId },
+      });
+
+      return { success: true };
+    }),
 });

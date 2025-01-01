@@ -7,7 +7,7 @@ import { LikeButton } from "../PostId/LikeButton/like";
 import CreatePost from "../CreatePost/page";
 import { formatDate } from "~/lib/format";
 import { useSession } from "next-auth/react";
-import { DeletePost } from "../deletebutton";
+import { DeletePost } from "../deletePost";
 
 export function Posts() {
   const { data: session } = useSession();

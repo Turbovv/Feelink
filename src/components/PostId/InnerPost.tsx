@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useParams } from "next/navigation";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
@@ -8,10 +7,11 @@ import { useSession } from "next-auth/react";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { formatDate } from "../../lib/format";
 import { LikeButton } from "./LikeButton/like";
-import { DeletePost } from "../deletebutton";
+import { DeletePost } from "../deletePost";
 import Link from "next/link";
 import GifModal from "../CreatePost/GifModal/GifModal";
 import UploadThing from "../CreatePost/UploadThing/UploadThing";
+import { DeleteComment } from "../deleteComment";
 
 export default function InnerPage() {
   const { data: session } = useSession();
@@ -56,7 +56,7 @@ export default function InnerPage() {
 
   const handleCommentSubmit = () => {
     if (commentContent.trim() || gifUrl.trim() || imageUrls.length > 0) {
-      createComment({ postId: id, content: commentContent, gifUrl, imageUrls});
+      createComment({ postId: id, content: commentContent, gifUrl, imageUrls });
     }
   };
 
@@ -70,15 +70,14 @@ export default function InnerPage() {
           <h1 className="text-2xl">Post</h1>
         </div>
 
-            <div className="mb-5 mt-5 flex items-start space-x-3">
+        <div className="mb-5 mt-5 flex items-start space-x-3">
           <Link href={`/settings/${post.createdBy.name}`}>
-              <img
-                className="h-10 w-10 rounded-full"
-                src={post.createdBy.image || "Avatar"}
-              />
-            </Link> 
+            <img
+              className="h-10 w-10 rounded-full"
+              src={post.createdBy.image || "Avatar"}
+            />
+          </Link>
           <div>
-
             <p>{post.createdBy.name}</p>
           </div>
         </div>
@@ -128,17 +127,15 @@ export default function InnerPage() {
       </div>
 
       <div className="relative border">
-      <img
-          className="absolute  top-12 h-10 w-10 rounded-full"
+        <img
+          className="absolute top-12 h-10 w-10 rounded-full"
           src={session?.user.image || "Avatar"}
         />
         <p className="absolute left-14 top-4">
           Replying to{" "}
-          <span className="text-blue-500">
-            @{post.createdBy.name}
-          </span>
+          <span className="text-blue-500">@{post.createdBy.name}</span>
         </p>
-      <textarea
+        <textarea
           className="w-full resize-none rounded border border-gray-300 p-10 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Post your reply"
           value={commentContent}
@@ -154,7 +151,7 @@ export default function InnerPage() {
           }}
         />
         {gifUrl && (
-          <div className="relative mt-3 ml-10 mr-4 ">
+          <div className="relative mt-3 ml-10 mr-4">
             <img src={gifUrl} alt="Selected GIF" className=" rounded-3xl w-full" />
             <Button variant="ghost" className="absolute top-1 right-1" onClick={() => setGifUrl("")}>
               X
@@ -178,16 +175,20 @@ export default function InnerPage() {
           </div>
         )}
 
-        <div className="flex items-center justify-between  mt-4 ">
+        <div className="flex items-center justify-between mt-4">
           <GifModal onGifSelect={setGifUrl} />
-          
+
           <UploadThing
             onUploadComplete={(files: any) => {
               setImageUrls((prev) => [...prev, ...files.map((file: any) => file.url)]);
             }}
             onUploadError={(error: any) => alert(error.message)}
           />
-          <Button className="rounded-full" onClick={handleCommentSubmit} disabled={!commentContent.trim() && !gifUrl && imageUrls.length === 0}>
+          <Button
+            className="rounded-full"
+            onClick={handleCommentSubmit}
+            disabled={!commentContent.trim() && !gifUrl && imageUrls.length === 0}
+          >
             Reply
           </Button>
         </div>
@@ -214,21 +215,24 @@ export default function InnerPage() {
                     {comment.content}
                   </p>
                   {comment.imageUrls?.length > 0 && (
-                  <div className="flex gap-3 mt-3">
-                    {comment.imageUrls.map((url: any, index: any) => (
-                      <img key={index} src={url} alt={`Comment Image ${index + 1}`} className="rounded-lg" />
-                    ))}
-                  </div>
-                )}
-                {comment.gifUrl && (
-              <img
-                src={comment.gifUrl}
-                alt="Comment GIF"
-                className="mt-2 rounded-lg"
-              />
-            )}
+                    <div className="flex gap-3 mt-3">
+                      {comment.imageUrls.map((url: any, index: any) => (
+                        <img key={index} src={url} alt={`Comment Image ${index + 1}`} className="rounded-lg" />
+                      ))}
+                    </div>
+                  )}
+                  {comment.gifUrl && (
+                    <img
+                      src={comment.gifUrl}
+                      alt="Comment GIF"
+                      className="mt-2 rounded-lg"
+                    />
+                  )}
                 </div>
                 <p>{formatDate(comment.createdAt, false)}</p>
+                {session?.user.id === comment.createdBy.id && (
+                  <DeleteComment commentId={comment.id} refetch={refetch} />
+                )}
               </div>
             </div>
           ))}

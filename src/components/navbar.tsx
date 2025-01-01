@@ -3,7 +3,7 @@
 import { ModeToggle } from "./ui/mode-toggle";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AppSidebar } from "../components/app-sidebar";
 import { CustomTrigger } from "./custom-trigger";
 import React from "react";
@@ -11,6 +11,7 @@ import React from "react";
 export function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
 
   if (pathname === "/auth/sign-in") {
     return null;
@@ -18,15 +19,18 @@ export function Navbar() {
 
   return (
     <div className="flex h-16 w-full items-center justify-between px-4">
-      <Link href="/" className="text-lg font-semibold">
+      <div
+        className="text-lg font-semibold"
+        onClick={() => router.push("/")} 
+      >
         Feelink
-      </Link>
+      </div>
 
       <div className="flex items-center gap-4">
         <AppSidebar />
         <ModeToggle />
         {session ? (
-        <CustomTrigger />
+          <CustomTrigger />
         ) : (
           <Link
             href="/auth/sign-in"
