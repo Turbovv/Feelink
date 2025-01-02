@@ -8,9 +8,11 @@ import CreatePost from "../CreatePost/page";
 import { formatDate } from "~/lib/format";
 import { useSession } from "next-auth/react";
 import { DeletePost } from "../deletePost";
+import { useRouter } from "next/navigation";
 
 export function Posts() {
   const { data: session } = useSession();
+  const router = useRouter()
   const {
     data: posts,
     refetch,
@@ -46,7 +48,7 @@ export function Posts() {
                   <DeletePost  postId={post.id} refetch={refetch} />
                 )}
                </div>
-                <Link href={`/posts/${post.id}`}>
+                <div  onClick={async () => await router.push(`/posts/${post?.id}`)}>
                   <div className="flex gap-2">
                     <img
                       className="h-14 w-14 rounded-full"
@@ -86,7 +88,7 @@ export function Posts() {
                       )}
                     </div>
                   </div>
-                </Link>
+                </div>
              
                 <div className="mt-4 flex items-center gap-5">
                   <p className="flex items-center gap-2 text-gray-600 dark:text-gray-400">

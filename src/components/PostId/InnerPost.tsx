@@ -1,17 +1,18 @@
-"use client"
-import { useParams } from "next/navigation";
+  "use client"
+import { useState } from "react";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogClose } from "../ui/dialog";
+import { ArrowLeft, Ellipsis, MessageCircle } from "lucide-react";
+import EditPost from "./EditPost/EditPost";
 import { useSession } from "next-auth/react";
-import { ArrowLeft, MessageCircle } from "lucide-react";
 import { formatDate } from "../../lib/format";
 import { LikeButton } from "./LikeButton/like";
 import { DeletePost } from "../deletePost";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import GifModal from "../CreatePost/GifModal/GifModal";
 import UploadThing from "../CreatePost/UploadThing/UploadThing";
-import { DeleteComment } from "../deleteComment";
 
 export default function InnerPage() {
   const { data: session } = useSession();
@@ -20,24 +21,27 @@ export default function InnerPage() {
   if (typeof id !== "string") {
     return <div>Invalid ID</div>;
   }
+
   const [gifUrl, setGifUrl] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+
   const {
     data: post,
     isLoading,
     isError,
     refetch,
   } = api.post.getById.useQuery({ id });
-  const { data: likeStatus } = api.like.getLikeStatus.useQuery({ postId: id });
 
+  const { data: likeStatus } = api.like.getLikeStatus.useQuery({ postId: id });
   const {
     data: likeCount,
     isLoading: isLikeCountLoading,
     refetch: refetchLikes,
   } = api.like.getLikeCount.useQuery({ postId: id });
+
   const [commentContent, setCommentContent] = useState("");
 
-  const { mutate: createComment }: any = api.comment.createComment.useMutation({
+  const { mutate: createComment } = api.comment.createComment.useMutation({
     onSuccess: () => {
       setCommentContent("");
       setGifUrl("");
@@ -45,6 +49,8 @@ export default function InnerPage() {
       refetch();
     },
   });
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // New state for dialog visibility
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -62,14 +68,39 @@ export default function InnerPage() {
 
   return (
     <div className="container mx-auto max-w-2xl">
-      <div className="border border-red-500 p-5">
-        <div className="flex items-center gap-5">
+      <div className="border p-5">
+        <div className="flex items-center justify-between gap-5 ">
           <Button variant={"ghost"} onClick={() => history.back()}>
             <ArrowLeft />
           </Button>
           <h1 className="text-2xl">Post</h1>
+          {session?.user.id === post.createdBy.id && (
+            <div>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => setIsDialogOpen(true)} variant="outline">
+                  <Ellipsis />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+              {session?.user.id === post.createdBy.id && (
+              <DeletePost postId={post.id} refetch={refetch} />
+            )}
+                  <EditPost
+                    postId={post.id}
+                    initialTitle={post.title}
+                    initialGifUrl={post.gifUrl}
+                    initialImageUrls={post.imageUrls}
+                    refetch={refetch}
+                  />
+                  <DialogClose asChild>
+      
+                  </DialogClose>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
         </div>
-
         <div className="mb-5 mt-5 flex items-start space-x-3">
           <Link href={`/settings/${post.createdBy.name}`}>
             <img
@@ -120,10 +151,6 @@ export default function InnerPage() {
             </div>
           </div>
         </div>
-
-        {session?.user.id === post.createdBy.id && (
-          <DeletePost postId={post.id} refetch={refetch} />
-        )}
       </div>
 
       <div className="relative border">
@@ -150,34 +177,8 @@ export default function InnerPage() {
             e.target.style.height = `${e.target.scrollHeight}px`;
           }}
         />
-        {gifUrl && (
-          <div className="relative mt-3 ml-10 mr-4">
-            <img src={gifUrl} alt="Selected GIF" className=" rounded-3xl w-full" />
-            <Button variant="ghost" className="absolute top-1 right-1" onClick={() => setGifUrl("")}>
-              X
-            </Button>
-          </div>
-        )}
-        {imageUrls.length > 0 && (
-          <div className="flex flex-wrap gap-3 mt-3">
-            {imageUrls.map((url, index) => (
-              <div key={index} className="relative">
-                <img src={url} alt={`Image ${index + 1}`} className="rounded-lg" />
-                <Button
-                  variant="ghost"
-                  className="absolute top-1 right-1"
-                  onClick={() => setImageUrls((prev) => prev.filter((_, i) => i !== index))}
-                >
-                  X
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-
         <div className="flex items-center justify-between mt-4">
           <GifModal onGifSelect={setGifUrl} />
-
           <UploadThing
             onUploadComplete={(files: any) => {
               setImageUrls((prev) => [...prev, ...files.map((file: any) => file.url)]);
@@ -191,51 +192,6 @@ export default function InnerPage() {
           >
             Reply
           </Button>
-        </div>
-      </div>
-
-      <div className="">
-        <div className="">
-          {post.comments?.map((comment: any) => (
-            <div
-              key={comment.id}
-              className="break-words rounded border border-gray-300 p-4"
-              style={{
-                wordBreak: "break-word",
-              }}
-            >
-              <div className="flex items-start space-x-3">
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src={comment.createdBy.image || "Avatar"}
-                />
-                <div>
-                  <p className="font-semibold">{comment.createdBy.name}</p>
-                  <p className="mt-2 text-sm text-gray-600">
-                    {comment.content}
-                  </p>
-                  {comment.imageUrls?.length > 0 && (
-                    <div className="flex gap-3 mt-3">
-                      {comment.imageUrls.map((url: any, index: any) => (
-                        <img key={index} src={url} alt={`Comment Image ${index + 1}`} className="rounded-lg" />
-                      ))}
-                    </div>
-                  )}
-                  {comment.gifUrl && (
-                    <img
-                      src={comment.gifUrl}
-                      alt="Comment GIF"
-                      className="mt-2 rounded-lg"
-                    />
-                  )}
-                </div>
-                <p>{formatDate(comment.createdAt, false)}</p>
-                {session?.user.id === comment.createdBy.id && (
-                  <DeleteComment commentId={comment.id} refetch={refetch} />
-                )}
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

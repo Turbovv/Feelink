@@ -3,7 +3,7 @@
 import { api } from "~/trpc/react";
 import { useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 export default function EditProfile() {
   const { data: session } = useSession();
@@ -18,7 +18,7 @@ export default function EditProfile() {
   const profileImageRef = useRef<HTMLInputElement>(null);
   const backgroundImageRef = useRef<HTMLInputElement>(null);
 
-  const { mutate: updateProfile, isLoading: isUpdating } =
+  const { mutate: updateProfile, isLoading: isUpdating }: any =
     api.userpost.updateProfile.useMutation();
 
   const router = useRouter();
@@ -31,6 +31,11 @@ export default function EditProfile() {
     }
   }, [user]);
 
+  const { refetch } = api.userpost.getUserByUsername.useQuery(
+    { username: session?.user.name || "" },
+    { enabled: false }
+  );
+
   if (isLoading) return <p>Loading...</p>;
 
   const handleProfileImageClick = () => {
@@ -42,8 +47,13 @@ export default function EditProfile() {
   };
 
   const handleSubmit = async () => {
-    await updateProfile({ image, background, description });
-    router.push(`/settings/${session?.user.name}`);
+    try {
+      await updateProfile({ image, background, description });
+      await refetch();
+      router.push(`/settings/${session?.user.name}`);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    }
   };
 
   return (
@@ -125,7 +135,7 @@ export default function EditProfile() {
 
         <div className="mt-16">
           <label
-            htmlFor="description "
+            htmlFor="description"
             className="block text-sm font-medium text-gray-700"
           >
             Description

@@ -46,7 +46,6 @@ export function DeletePost({ postId, refetch }: any) {
         </button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogHeader>
           <h2 className="text-lg font-semibold">Confirm Deletion</h2>
           <p className="text-sm text-gray-500">

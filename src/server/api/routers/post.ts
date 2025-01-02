@@ -157,4 +157,53 @@ export const postRouter = createTRPCRouter({
     };
   }),
 
+  editPost: protectedProcedure
+  .input(
+    z.object({
+      postId: z.string().min(1),
+      title: z.string().min(1),
+      gifUrl: z
+        .string()
+        .optional()
+        .refine((url) => !url || /^https?:\/\//.test(url), {
+          message: "Invalid gif URL",
+        }),
+      imageUrls: z
+        .array(z.string().url())
+        .optional()
+        .refine((urls: any) => urls.every((url: any) => url), {
+          message: "Invalid image URLs",
+        }),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const post = await ctx.db.post.findUnique({
+      where: { id: input.postId },
+      select: { createdById: true },
+    });
+
+    if (!post) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Post not found",
+      });
+    }
+
+    if (post.createdById !== ctx.session.user.id) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "You are not authorized to edit this post",
+      });
+    }
+
+    return ctx.db.post.update({
+      where: { id: input.postId },
+      data: {
+        title: input.title,
+        gifUrl: input.gifUrl || "",
+        imageUrls: input.imageUrls || [],
+      },
+    });
+  }),
+
 });
