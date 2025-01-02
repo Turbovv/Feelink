@@ -19,7 +19,7 @@ const FollowingPage: React.FC = () => {
 
   const { data: followings, isLoading: followingLoading } =
     api.follow.getFollowingWithStatus.useQuery({
-      userId: user?.id || "",
+      userId: user?.id ?? "",
     });
 
   if (!user) return <div>User not found</div>;
@@ -27,7 +27,7 @@ const FollowingPage: React.FC = () => {
   return (
     <div className="container mx-auto max-w-2xl">
       <div className="border bg-white shadow-md dark:bg-gray-800 dark:text-white">
-        {userLoading || followingLoading ? (
+        {userLoading ?? followingLoading ? (
           <div>Loading...</div>
         ) : followings?.length ? (
           followings.map((following) => (
@@ -39,7 +39,7 @@ const FollowingPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <img
                     className="h-12 w-12 rounded-full"
-                    src={following.following.image || "/default-avatar.png"}
+                    src={following.following.image ?? "/default-avatar.png"}
                     alt={following.following.name}
                   />
                   <Link
@@ -52,7 +52,7 @@ const FollowingPage: React.FC = () => {
                 {session?.user?.id !== following.followingId && (
                   <FollowUnfollowButton
                     userId={following.followingId}
-                    isFollowing={following.isFollowingBack || false}
+                    isFollowing={following.isFollowingBack ?? false}
                   />
                 )}
               </div>

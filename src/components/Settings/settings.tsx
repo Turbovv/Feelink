@@ -18,7 +18,7 @@ function Settings() {
 
   const { data: posts, isLoading: postsLoading, error, refetch: refetchLikes } =
     api.userpost.getByUser.useQuery({
-      userId: user?.id || "",
+      userId: user?.id ?? "",
     });
 
   if (userLoading) return <div>Loading...</div>;
@@ -31,7 +31,7 @@ function Settings() {
       <div className="">
         <ProfileCard user={user} isCurrentUser={isCurrentUser} sessionUserId={session?.user?.id} />
         <UserPosts
-          posts={posts || []}
+          posts={posts ?? []}
           userImage={user.image}
           userName={user.name}
           isLoading={postsLoading}

@@ -16,7 +16,7 @@ const FollowersPage: React.FC = () => {
     username: username as string,
   });
   const { data: followers } = api.follow.getFollowers.useQuery({
-    userId: user?.id || "",
+    userId: user?.id ?? "",
   });
 
   if (!user) return <div>User not found</div>;
@@ -33,7 +33,7 @@ const FollowersPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <img
                     className="w-12 h-12 rounded-full"
-                    src={follower.user.image || "/default-avatar.png"}
+                    src={follower.user.image ?? "/default-avatar.png"}
                     alt={follower.user.name}
                   />
                   <Link
@@ -46,7 +46,7 @@ const FollowersPage: React.FC = () => {
                 {session?.user?.id !== follower.userId && (
                   <FollowUnfollowButton
                     userId={follower.userId}
-                    isFollowing={follower.isFollowing || false}
+                    isFollowing={follower.isFollowing ?? false}
                   />
                 )}
               </div>

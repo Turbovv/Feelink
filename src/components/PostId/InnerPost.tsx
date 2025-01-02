@@ -125,7 +125,7 @@ export default function InnerPage() {
 
           {post.imageUrls?.length > 0 && (
             <div className="mt-5 flex gap-4">
-              {post.imageUrls.map((url: any, index: any) => (
+              {post.imageUrls.map((url, index) => (
                 <img
                   key={index}
                   src={url}
@@ -180,10 +180,10 @@ export default function InnerPage() {
         <div className="flex items-center justify-between mt-4">
           <GifModal onGifSelect={setGifUrl} />
           <UploadThing
-            onUploadComplete={(files: any) => {
-              setImageUrls((prev) => [...prev, ...files.map((file: any) => file.url)]);
+            onUploadComplete={(files) => {
+              setImageUrls((prev) => [...prev, ...files.map((file) => file.url)]);
             }}
-            onUploadError={(error: any) => alert(error.message)}
+            onUploadError={(error) => alert(error.message)}
           />
           <Button
             className="rounded-full"

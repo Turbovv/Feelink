@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export default function EditProfile() {
   const { data: session } = useSession();
   const { data: user, isLoading } = api.userpost.getUserById.useQuery({
-    userId: session?.user.id || "",
+    userId: session?.user.id ?? "",
   });
 
   const [image, setImage] = useState<string>("");
@@ -25,14 +25,14 @@ export default function EditProfile() {
 
   useEffect(() => {
     if (user) {
-      setImage(user.image || "");
-      setBackground(user.background || "");
-      setDescription(user.description || "");
+      setImage(user.image ?? "");
+      setBackground(user.background ?? "");
+      setDescription(user.description ?? "");
     }
   }, [user]);
 
   const { refetch } = api.userpost.getUserByUsername.useQuery(
-    { username: session?.user.name || "" },
+    { username: session?.user.name ?? "" },
     { enabled: false }
   );
 

@@ -12,10 +12,10 @@ export function CustomTrigger() {
         {session?.user?.image ? (
           <AvatarImage
             src={session.user.image}
-            alt={session.user.name || "User"}
+            alt={session.user.name ?? "User"}
           />
         ) : (
-          <AvatarFallback>{session?.user?.name?.[0] || "U"}</AvatarFallback>
+          <AvatarFallback>{session?.user?.name?.[0] ?? "U"}</AvatarFallback>
         )}
       </Avatar>
     </button>

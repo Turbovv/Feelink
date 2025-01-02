@@ -5,7 +5,7 @@ import { api } from "~/trpc/react";
 import { Button } from "../../ui/button";
 import GifModal from "../../CreatePost/GifModal/GifModal";
 import UploadThing from "../../CreatePost/UploadThing/UploadThing";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '../../ui/dialog';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../ui/dialog';
 
 export default function EditPost({ postId, initialTitle, initialGifUrl, initialImageUrls }: any) {
   const [title, setTitle] = useState(initialTitle || "");

@@ -14,7 +14,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 
-export function DeletePost({ postId, refetch }: any) {
+interface DeletePostProps {
+  postId: string;
+  refetch: () => void;
+}
+export function DeletePost({ postId, refetch }: DeletePostProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 

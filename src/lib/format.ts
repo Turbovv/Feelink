@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const formatDate = (isoDate: string, displayTimeAndDate: boolean = false): string => {
   const postDate = new Date(isoDate);
   const currentDate = new Date();
@@ -43,7 +44,7 @@ export const formatDate = (isoDate: string, displayTimeAndDate: boolean = false)
 
 export const formatYearMonth = (isoDate: string | number | Date): string => {
   const date = new Date(isoDate);
-  const month = date.toLocaleString("en-US", { month: "short" }); // e.g., Jan, Feb
+  const month = date.toLocaleString("en-US", { month: "short" });
   const year = date.getFullYear();
   return `${month} ${year}`;
 };

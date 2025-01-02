@@ -27,8 +27,8 @@ export const commentRouter = createTRPCRouter({
       const comment = await ctx.db.comment.create({
         data: {
           content: input.content,
-          gifUrl: input.gifUrl || null,
-          imageUrls: input.imageUrls || [],
+          gifUrl: input.gifUrl ?? null,
+          imageUrls: input.imageUrls ?? [],
           post: { connect: { id: input.postId } }, 
           createdBy: { connect: { id: ctx.session.user.id } }, 
         },

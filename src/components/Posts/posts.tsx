@@ -1,7 +1,6 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import Link from "next/link";
 import { api } from "~/trpc/react";
 import { LikeButton } from "../PostId/LikeButton/like";
 import CreatePost from "../CreatePost/page";
@@ -52,7 +51,7 @@ export function Posts() {
                   <div className="flex gap-2">
                     <img
                       className="h-14 w-14 rounded-full"
-                      src={post.createdBy.image || "Avatar"}
+                      src={post.createdBy.image ?? "Avatar"}
                       alt="Avatar"
                     />
                     <div>
