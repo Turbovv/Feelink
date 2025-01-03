@@ -41,20 +41,19 @@ export function Posts() {
         <div className="">
           {posts.map((post) => (
             <div key={post.id} className="text-lg font-semibold">
-              <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-md transition hover:shadow-lg dark:bg-neutral-900 dark:hover:shadow-xl">
-              <div className="flex justify-end "> 
+              <div className="relative rounded-lg border  border-gray-200 bg-white p-2 shadow-md transition dark:bg-black hover:shadow-lg dark:hover:shadow-xl">
                {session?.user.id === post.createdBy.id && (
+              <div className="absolute right-4 top-4"> 
                   <DeletePost  postId={post.id} refetch={refetch} />
-                )}
                </div>
-                <div  onClick={async () => await router.push(`/posts/${post?.id}`)}>
-                  <div className="flex gap-2">
-                    <img
+                )}
+                <div className="cursor-pointer"  onClick={async () => await router.push(`/posts/${post?.id}`)}>
+                   <div className="flex items-center gap-2">
+                   <img
                       className="h-14 w-14 rounded-full"
                       src={post.createdBy.image ?? "Avatar"}
                       alt="Avatar"
                     />
-                    <div>
                       <div className="flex gap-5">
                         <p className="text-gray-900 dark:text-gray-100">
                           {post.createdBy.name}
@@ -63,14 +62,16 @@ export function Posts() {
                           {formatDate(post.createdAt.toString(), false)}
                         </p>
                       </div>
-                      <p className="text-gray-800 dark:text-gray-200">
+                   </div>
+                     <div className="ml-16 mr-2">
+                     <p className="text-gray-800 dark:text-gray-200">
                         {post.title}
                       </p>
                       {post.gifUrl && (
                         <img
                           src={post.gifUrl}
                           alt="Gif"
-                          className="mt-2 w-full rounded-lg border border-gray-200 dark:border-gray-700"
+                          className="mt-2 w-full rounded-3xl border border-gray-200 dark:border-gray-700"
                         />
                       )}
                       {post.imageUrls && post.imageUrls.length > 0 && (
@@ -85,12 +86,11 @@ export function Posts() {
                           ))}
                         </div>
                       )}
-                    </div>
-                  </div>
+                     </div>
                 </div>
              
-                <div className="mt-4 flex items-center gap-5">
-                  <p className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                <div className="mt-4 flex items-center gap-10  ml-16">
+                  <p onClick={() => router.push(`/posts/${post.id}`)} className="flex items-center gap-2 cursor-pointer text-gray-600 dark:text-gray-400">
                     <MessageCircle />
                     {post.Comment.length}
                   </p>

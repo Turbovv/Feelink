@@ -32,7 +32,9 @@ export default function GifModal({ onGifSelect }: GifPickerProps) {
 
   return (
     <>
-      <Button variant="ghost" onClick={() => setIsOpen(true)}>
+      <Button variant="ghost" 
+      type="button" 
+      onClick={() => setIsOpen(true)}>
       <FilmIcon className="border-2 border-blue-500" />
       </Button>
 

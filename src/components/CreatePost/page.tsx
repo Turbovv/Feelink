@@ -114,7 +114,7 @@ export default function CreatePost() {
           )}
         </div>
 
-        <div className="mt-5 flex justify-between">
+        <div className=" flex justify-between">
           <GifModal onGifSelect={setGifUrl} />
           
           <UploadThing
