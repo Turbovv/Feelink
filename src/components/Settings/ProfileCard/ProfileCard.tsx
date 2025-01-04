@@ -15,11 +15,11 @@ function ProfileCard({ user, isCurrentUser, sessionUserId }:any) {
   const formattedCreatedAt = formatYearMonth(user.createdAt);
 
   return (
-    <div className="col-span-1 rounded-lg dark:bg-black bg-white p-6 shadow-md dark:text-white">
+    <div className="col-span-1 rounded-lg dark:bg-black shadow-md dark:text-white">
       <div className="">
         <div className="">
-          <img src={user.background} alt="background" className="relative h-48 w-full object-cover" />
-         <div className="flex items-center justify-between ">
+          <img src={user.background} alt="background" className="relative border border-gray-400 h-48 w-full object-cover" />
+         <div className="flex items-center justify-between p-6">
          <img
             src={user.image || "/default-avatar.png"}
             alt="Avatar"
@@ -29,7 +29,7 @@ function ProfileCard({ user, isCurrentUser, sessionUserId }:any) {
             {isCurrentUser ? (
               <button
                 onClick={handleEditProfile}
-                className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                className="px-4 py-2 dark:text-white dark:bg-black rounded-3xl border hover:bg-gray-300"
               >
                 Edit Profile
               </button>
@@ -45,6 +45,7 @@ function ProfileCard({ user, isCurrentUser, sessionUserId }:any) {
          </div>
         </div>
 
+      <div className=" p-6">  
         <h2 className="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
           {user.name || "User Name"}
         </h2>
@@ -63,7 +64,7 @@ function ProfileCard({ user, isCurrentUser, sessionUserId }:any) {
             followersCount={user.followers?.length || 0}
             followingCount={user.following?.length || 0}
           />
-        </div>
+        </div></div>
       </div>
     </div>
   );

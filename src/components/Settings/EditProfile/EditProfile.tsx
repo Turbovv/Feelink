@@ -2,8 +2,9 @@
 
 import { api } from "~/trpc/react";
 import { useSession } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { UploadButton } from "~/utils/uploadthing";
 
 export default function EditProfile() {
   const { data: session } = useSession();
@@ -15,36 +16,37 @@ export default function EditProfile() {
   const [background, setBackground] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const profileImageRef = useRef<HTMLInputElement>(null);
-  const backgroundImageRef = useRef<HTMLInputElement>(null);
+  const [originalImage, setOriginalImage] = useState<string>("");
+  const [originalBackground, setOriginalBackground] = useState<string>("");
+  const [originalDescription, setOriginalDescription] = useState<string>("");
+
+  const [backgroundModified, setBackgroundModified] = useState<boolean>(false);
+  const [imageModified, setImageModified] = useState<boolean>(false);
+  const [descriptionModified, setDescriptionModified] = useState<boolean>(false);
 
   const { mutate: updateProfile, isLoading: isUpdating }: any =
     api.userpost.updateProfile.useMutation();
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (user) {
-      setImage(user.image ?? "");
-      setBackground(user.background ?? "");
-      setDescription(user.description ?? "");
-    }
-  }, [user]);
-
   const { refetch } = api.userpost.getUserByUsername.useQuery(
     { username: session?.user.name ?? "" },
     { enabled: false }
   );
 
+  useEffect(() => {
+    if (user) {
+      setImage(user.image ?? "");
+      setBackground(user.background ?? "");
+      setDescription(user.description ?? "");
+
+      setOriginalImage(user.image ?? "");
+      setOriginalBackground(user.background ?? "");
+      setOriginalDescription(user.description ?? "");
+    }
+  }, [user]);
+
   if (isLoading) return <p>Loading...</p>;
-
-  const handleProfileImageClick = () => {
-    profileImageRef.current?.click();
-  };
-
-  const handleBackgroundImageClick = () => {
-    backgroundImageRef.current?.click();
-  };
 
   const handleSubmit = async () => {
     try {
@@ -56,6 +58,34 @@ export default function EditProfile() {
     }
   };
 
+  const handleCancel = () => {
+    setImage(originalImage);
+    setBackground(originalBackground);
+    setDescription(originalDescription);
+    setBackgroundModified(false);
+    setImageModified(false);
+    setDescriptionModified(false);
+  };
+
+  const handleBackgroundUpload = (files: any) => {
+    if (files.length > 0) {
+      setBackground(files[0].url);
+      setBackgroundModified(true);
+    }
+  };
+
+  const handleProfileImageUpload = (files: any) => {
+    if (files.length > 0) {
+      setImage(files[0].url);
+      setImageModified(true);
+    }
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
+    setDescriptionModified(true);
+  };
+
   return (
     <div className="flex flex-col items-center px-4 py-8 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl">
@@ -65,75 +95,57 @@ export default function EditProfile() {
 
         <div className="relative mb-6">
           <div
-            className="relative h-48 w-full rounded-lg bg-gray-200 overflow-hidden cursor-pointer"
-            onClick={handleBackgroundImageClick}
+            className={`relative h-48 w-full rounded-lg overflow-hidden ${background ? "" : "bg-gray-300"
+              }`}
           >
             {background ? (
               <img
                 src={background}
                 alt="Background"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover bg-gray-300"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-gray-500">
-                Click to upload background
+                Upload background
               </div>
             )}
-            <input
-              ref={backgroundImageRef}
-              type="file"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = () => {
-                    const uploadedBackground = reader.result as string;
-                    setBackground(uploadedBackground);
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-          </div>
-
-          <div
-            className="absolute -bottom-10 left-6 flex items-center cursor-pointer"
-            onClick={handleProfileImageClick}
-          >
-            <div className="relative h-20 w-20 rounded-full bg-gray-200 border-4 border-white overflow-hidden">
-              {image ? (
-                <img
-                  src={image}
-                  alt="Profile"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-gray-500">
-                  Click to upload avatar
-                </div>
-              )}
-              <input
-                ref={profileImageRef}
-                type="file"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      const uploadedImage = reader.result as string;
-                      setImage(uploadedImage);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
+            <div className="absolute inset-0">
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={handleBackgroundUpload}
+                onUploadError={(error) => alert(error.message)}
+                className="h-full w-full"
               />
             </div>
           </div>
         </div>
 
-        <div className="mt-16">
+        <div className="flex items-center">
+          <div
+            className={`relative h-20 w-20 rounded-full border-4 border-white overflow-hidden ${image ? "" : "bg-gray-200"
+              }`}
+          >
+            {image ? (
+              <img
+                src={image}
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-gray-500">
+                Upload avatar
+              </div>
+            )}
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={handleProfileImageUpload}
+              onUploadError={(error) => alert(error.message)}
+              className="absolute top-4 left-4 h-full w-full text-sm cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <div className="">
           <label
             htmlFor="description"
             className="block text-sm font-medium text-gray-700"
@@ -143,21 +155,29 @@ export default function EditProfile() {
           <textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={handleDescriptionChange}
             className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm resize-none"
             rows={4}
             placeholder="Write something about yourself..."
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-6 space-x-4">
+          {(backgroundModified || imageModified || descriptionModified) && (
+            <button
+              onClick={handleCancel}
+              className="px-6 py-2 text-gray-500 font-medium rounded-lg border border-gray-300 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+          )}
+
           <button
             onClick={handleSubmit}
-            className={`px-6 py-2 text-white font-medium rounded-lg ${
-              isUpdating
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
-            }`}
+            className={`px-6 py-2 text-white font-medium rounded-lg ${isUpdating
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+              }`}
             disabled={isUpdating}
           >
             {isUpdating ? "Saving..." : "Save"}
