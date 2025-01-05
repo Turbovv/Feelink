@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-
+import { cookies } from "next/headers"
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
@@ -14,9 +14,12 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export  default async  function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+
+  const cookieStore = await cookies()
+    const defaultOpen = cookieStore.get("sidebar:state")?.value === "true"
   return (
     <html lang="en" suppressHydrationWarning className={`${GeistSans.variable}`}>
       <body className="dark:bg-black">
@@ -28,7 +31,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <SidebarProvider>
+              <SidebarProvider defaultOpen={defaultOpen}>
                 <div className="grid absolute w-full">
               <Navbar />
               {children}

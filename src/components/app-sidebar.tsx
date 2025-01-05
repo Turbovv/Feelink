@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,11 +20,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import SignOut from "./sign-out";
 import React from "react";
-import Link from "next/link";
+
 export function AppSidebar() {
   const { toggleSidebar } = useSidebar();
   const { data: session } = useSession();
-  
+  const router = useRouter();
+
   const items = [
     {
       title: "Settings",
@@ -31,10 +33,16 @@ export function AppSidebar() {
       icon: Settings,
     },
     {
-      title: "Custom",
-      component: SignOut,
+      title: "Profile",
+      url: session?.user?.name ? `/settings/profile` : "/",
+      icon: Settings,
     },
   ];
+
+  const handleNavigation = (url: string) => {
+    router.push(url); 
+    toggleSidebar();
+  };
 
   return (
     <Sidebar  side="right">
@@ -59,26 +67,24 @@ export function AppSidebar() {
           </SidebarGroupLabel>
 
           <SidebarGroupContent className="mt-5">
-            <SidebarMenu >
+            <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem className="mb-2" key={item.title}>
-                  {item.component ? (
-                    <item.component />
-                  ) : (
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={item.url}
-                        className="flex items-center gap-3 p-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                      >
-                        <item.icon className="w-5 h-5" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  )}
+                  <SidebarMenuButton
+                    className="flex items-center gap-3 p-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                    onClick={() => handleNavigation(item.url)}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+
+          <div className="mt-5">
+            <SignOut />
+          </div>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>

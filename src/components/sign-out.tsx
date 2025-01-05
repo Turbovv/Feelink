@@ -3,13 +3,17 @@
 import { signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { useSidebar } from "./ui/sidebar";
 
 export default function SignOut() {
+  const { toggleSidebar } = useSidebar();
+
   const router = useRouter();
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' }); 
     router.push('/');
+    toggleSidebar()
   };
 
   return (
