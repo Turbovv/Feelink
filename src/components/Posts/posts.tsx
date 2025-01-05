@@ -6,11 +6,13 @@ import { LikeButton } from "../PostId/LikeButton/like";
 import CreatePost from "../CreatePost/page";
 import { formatDate } from "~/lib/format";
 import { useSession } from "next-auth/react";
-import { DeletePost } from "../deletePost";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import PostOwnerDialog from "../PostOwnerDialog/PostOwnerDialog";
 
 export function Posts() {
   const { data: session } = useSession();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter()
   const {
     data: posts,
@@ -19,7 +21,6 @@ export function Posts() {
     error,
     refetch: refetchLikes,
   } = api.post.Posts.useQuery();
-
   if (isLoading) {
     return (
       <p className="text-center text-gray-500 dark:text-gray-400">Loading...</p>
@@ -44,7 +45,7 @@ export function Posts() {
               <div className="relative rounded-lg border  border-gray-200 bg-white p-2 shadow-md transition dark:bg-black hover:shadow-lg dark:hover:shadow-xl">
                {session?.user.id === post.createdBy.id && (
               <div className="absolute right-4 top-4"> 
-                  <DeletePost  postId={post.id} refetch={refetch} />
+                  <PostOwnerDialog post={post} session={session} refetch={refetch} />
                </div>
                 )}
                 <div className="cursor-pointer"  onClick={async () => await router.push(`/posts/${post?.id}`)}>

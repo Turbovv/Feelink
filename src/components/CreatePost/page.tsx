@@ -1,12 +1,12 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import GifModal from "./GifModal/GifModal";
-import UploadThing from "./UploadThing/UploadThing"; 
+import UploadThing from "./UploadThing/UploadThing";
 
 export default function CreatePost() {
   const { data: session, status } = useSession();
@@ -16,11 +16,6 @@ export default function CreatePost() {
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/sign-in");
-    }
-  }, [status, router]);
 
   const utils = api.useContext();
   const createPost = api.post.create.useMutation({
@@ -116,7 +111,7 @@ export default function CreatePost() {
 
         <div className=" flex items-center justify-end">
           <GifModal onGifSelect={setGifUrl} />
-          
+
           <UploadThing
             onUploadComplete={(files) => {
               setImageUrls((prev) => [...prev, ...files.map((file) => file.url)]);

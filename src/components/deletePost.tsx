@@ -6,10 +6,8 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTrigger,
-  DialogTitle,
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
-import { Ellipsis } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
@@ -45,9 +43,9 @@ export function DeletePost({ postId, refetch }: DeletePostProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <button className="text-red-500" title="Delete Post">
-          <Ellipsis />
-        </button>
+        <Button variant="outline" className="flex gap-2 dark:bg-black dark:text-white   text-red-500 items-center">
+          <p>Delete Post</p>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

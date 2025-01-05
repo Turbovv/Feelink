@@ -1,18 +1,17 @@
-  "use client"
+"use client"
 import { useState } from "react";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogClose } from "../ui/dialog";
 import { ArrowLeft, Ellipsis, MessageCircle } from "lucide-react";
-import EditPost from "./EditPost/EditPost";
 import { useSession } from "next-auth/react";
 import { formatDate } from "../../lib/format";
 import { LikeButton } from "./LikeButton/like";
-import { DeletePost } from "../deletePost";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import GifModal from "../CreatePost/GifModal/GifModal";
 import UploadThing from "../CreatePost/UploadThing/UploadThing";
+import { DeleteComment } from "../deleteComment";
+import PostOwnerDialog from "../PostOwnerDialog/PostOwnerDialog";
 
 export default function InnerPage() {
   const { data: session } = useSession();
@@ -50,8 +49,6 @@ export default function InnerPage() {
     },
   });
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // New state for dialog visibility
-
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -69,36 +66,13 @@ export default function InnerPage() {
   return (
     <div className="container mx-auto max-w-2xl">
       <div className="border p-5">
-        <div className="flex items-center justify-between gap-5 ">
+        <div className="flex items-center justify-between gap-5">
           <Button variant={"ghost"} onClick={() => history.back()}>
             <ArrowLeft />
+            <h1 className="text-2xl">Post</h1>
           </Button>
-          <h1 className="text-2xl">Post</h1>
           {session?.user.id === post.createdBy.id && (
-            <div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setIsDialogOpen(true)} variant="outline">
-                  <Ellipsis />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-              {session?.user.id === post.createdBy.id && (
-              <DeletePost postId={post.id} refetch={refetch} />
-            )}
-                  <EditPost
-                    postId={post.id}
-                    initialTitle={post.title}
-                    initialGifUrl={post.gifUrl}
-                    initialImageUrls={post.imageUrls}
-                    refetch={refetch}
-                  />
-                  <DialogClose asChild>
-      
-                  </DialogClose>
-                </DialogContent>
-              </Dialog>
-            </div>
+            <PostOwnerDialog post={post} session={session} refetch={refetch} />
           )}
         </div>
         <div className="mb-5 mt-5 flex items-start space-x-3">
@@ -119,7 +93,7 @@ export default function InnerPage() {
             <img
               src={post.gifUrl}
               alt="Gif"
-              className="mt-2 w-full rounded-lg border border-gray-200 dark:border-gray-700"
+              className="mt-2 mb-2 w-full h-full rounded-lg border border-gray-200 dark:border-gray-700"
             />
           )}
 
@@ -130,13 +104,13 @@ export default function InnerPage() {
                   key={index}
                   src={url}
                   alt={`Image ${index + 1}`}
-                  className="w-full h-auto rounded-lg mb-4"
+                  className="w-full h-full rounded-lg mb-2"
                 />
               ))}
             </div>
           )}
           <p>{formatDate(post.createdAt.toString(), true)}</p>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 ">
             <p className="flex items-center gap-2">
               <MessageCircle />
               {post.comments.length}
@@ -155,7 +129,7 @@ export default function InnerPage() {
 
       <div className="relative border">
         <img
-          className="absolute top-12 h-10 w-10 rounded-full"
+          className="absolute top-8 ml-2 h-10 w-10 rounded-full"
           src={session?.user.image || "Avatar"}
         />
         <p className="absolute left-14 top-4">
@@ -163,7 +137,7 @@ export default function InnerPage() {
           <span className="text-blue-500">@{post.createdBy.name}</span>
         </p>
         <textarea
-          className="w-full resize-none rounded border border-gray-300 p-10 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full resize-none rounded p-14 text-xl  "
           placeholder="Post your reply"
           value={commentContent}
           rows={1}
@@ -177,7 +151,32 @@ export default function InnerPage() {
             e.target.style.height = `${e.target.scrollHeight}px`;
           }}
         />
-        <div className="flex items-center justify-between mt-4">
+        {gifUrl && (
+          <div className="relative mt-3 ml-10 mr-4">
+            <img src={gifUrl} alt="Selected GIF" className=" rounded-3xl w-full" />
+            <Button variant="ghost" className="absolute top-1 right-1" onClick={() => setGifUrl("")}>
+              X
+            </Button>
+          </div>
+        )}
+        {imageUrls.length > 0 && (
+          <div className="flex flex-wrap gap-3 mt-3 ml-10 mr-4">
+            {imageUrls.map((url, index) => (
+              <div key={index} className="relative">
+                <img src={url} alt={`Image ${index + 1}`} className=" rounded-3xl w-full" />
+                <Button
+                  variant="ghost"
+                  className="absolute top-1 right-1"
+                  onClick={() => setImageUrls((prev) => prev.filter((_, i) => i !== index))}
+                >
+                  X
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center justify-end px-2 mb-2">
           <GifModal onGifSelect={setGifUrl} />
           <UploadThing
             onUploadComplete={(files) => {
@@ -192,6 +191,59 @@ export default function InnerPage() {
           >
             Reply
           </Button>
+        </div>
+      </div>
+      <div className="">
+        <div className="">
+          {post.comments?.map((comment: any) => (
+            <div
+              key={comment.id}
+              className="break-words rounded border border-gray-300 p-4"
+              style={{
+                wordBreak: "break-word",
+              }}
+            >
+              <div className="flex items-start space-x-3">
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src={comment.createdBy.image || "Avatar"}
+                />
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold">{comment.createdBy.name}</p>
+                          <p className="text-sm text-gray-400">{formatDate(comment.createdAt, false)}</p>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-600">{comment.content}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {comment.imageUrls?.length > 0 && (
+                    <div className="mt-3 gap-3">
+                      {comment.imageUrls.map((url: any, index: any) => (
+                        <img key={index} src={url} alt={`Comment Image ${index + 1}`} className="rounded-lg w-full h-full" />
+                      ))}
+                    </div>
+                  )}
+                  {comment.gifUrl && (
+                    <img
+                      src={comment.gifUrl}
+                      alt="Comment GIF"
+                      className="mt-2 rounded-lg w-full h-full"
+                    />
+                  )}
+                </div>
+                {session?.user.id === comment.createdBy.id && (
+                  <div className="ml-auto">
+                    <DeleteComment commentId={comment.id} refetch={refetch} />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
         </div>
       </div>
     </div>
