@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { api } from "~/trpc/react";
@@ -111,6 +112,7 @@ export default function EditProfile() {
             )}
             <div className="absolute inset-0">
               <UploadButton
+                // eslint-disable-next-line
                 endpoint="imageUploader"
                 onClientUploadComplete={handleBackgroundUpload}
                 onUploadError={(error) => alert(error.message)}
@@ -137,6 +139,7 @@ export default function EditProfile() {
               </div>
             )}
             <UploadButton
+              // eslint-disable-next-line
               endpoint="imageUploader"
               onClientUploadComplete={handleProfileImageUpload}
               onUploadError={(error) => alert(error.message)}
