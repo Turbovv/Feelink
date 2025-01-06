@@ -13,6 +13,7 @@ export default function CreatePost() {
   const [title, setTitle] = useState("");
   const [gifUrl, setGifUrl] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -24,6 +25,7 @@ export default function CreatePost() {
       setTitle("");
       setGifUrl("");
       setImageUrls([]);
+      setVideoUrls([]);
       router.push("/");
     },
   });
@@ -38,7 +40,9 @@ export default function CreatePost() {
   const removeImage = (index: number) => {
     setImageUrls((prev) => prev.filter((_, i) => i !== index));
   };
-
+  const removeVideo = (index: number) => {
+    setVideoUrls((prev) => prev.filter((_, i) => i !== index));
+  };
   if (status === "loading") {
     return <p>Loading...</p>;
   }
@@ -52,8 +56,8 @@ export default function CreatePost() {
       className="space-y-6"
       onSubmit={(e) => {
         e.preventDefault();
-        if (title.trim() || gifUrl.trim() || imageUrls.length > 0) {
-          createPost.mutate({ title, gifUrl, imageUrls });
+        if (title.trim() || gifUrl.trim() || imageUrls.length > 0 || videoUrls.length > 0) {
+          createPost.mutate({ title, gifUrl, imageUrls, videoUrls });
         }
       }}
     >
@@ -86,13 +90,14 @@ export default function CreatePost() {
             </div>
           )}
 
+
           {imageUrls.length > 0 && (
             <div className="flex flex-wrap gap-4">
               {imageUrls.map((url, index) => (
                 <div key={index} className="relative">
                   <img
+                    key={index}
                     src={url}
-                    alt={`Uploaded image ${index + 1}`}
                     className=" w-full rounded-lg"
                   />
                   <Button
@@ -107,6 +112,30 @@ export default function CreatePost() {
               ))}
             </div>
           )}
+
+          {videoUrls.length > 0 && (
+            <div className="flex flex-wrap gap-4">
+              {videoUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <video
+                    key={index}
+                    src={url}
+                    className="w-full rounded-lg"
+                    controls
+                  />
+                   <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-2 rounded-full bg-black text-white dark:bg-white dark:text-black"
+                    onClick={() => removeVideo(index)}
+                  >
+                    X
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
         </div>
 
         <div className=" flex items-center justify-end">
@@ -114,14 +143,18 @@ export default function CreatePost() {
 
           <UploadThing
             onUploadComplete={(files) => {
-              setImageUrls((prev) => [...prev, ...files.map((file) => file.url)]);
+              if (files.some((file: any) => file.type.startsWith("image/"))) {
+                setImageUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("image/")).map((file) => file.url)]);
+              } else {
+                setVideoUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("video/")).map((file) => file.url)]);
+              }
             }}
             onUploadError={(error) => alert(error.message)}
           />
           <Button
             className="rounded-3xl px-5 py-2"
             type="submit"
-            disabled={(!title.trim() && !gifUrl.trim() && imageUrls.length === 0) || createPost.isPending}
+            disabled={(!title.trim() && !gifUrl.trim() && imageUrls.length === 0 && videoUrls.length === 0) || createPost.isPending}
           >
             {createPost.isPending ? "Submitting..." : "Post"}
           </Button>

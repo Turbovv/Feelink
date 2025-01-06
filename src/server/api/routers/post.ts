@@ -60,6 +60,7 @@ export const postRouter = createTRPCRouter({
           // eslint-disable-next-line
           message: "Invalid image URLs",
         }),
+        videoUrls: z.array(z.string().url()).optional(),
     })
   )
   .mutation(async ({ ctx, input }) => {
@@ -67,7 +68,8 @@ export const postRouter = createTRPCRouter({
       data: {
         title: input.title,
         gifUrl: input.gifUrl ?? "",
-        imageUrls: input.imageUrls ?? [], 
+        imageUrls: input.imageUrls ?? [],
+        videoUrls: input.videoUrls ?? [], 
         createdBy: { connect: { id: ctx.session.user.id } },
       },
     });
@@ -142,6 +144,7 @@ export const postRouter = createTRPCRouter({
       gifUrl: post.gifUrl,
       imageUrls: post.imageUrls,
       createdAt: post.createdAt,
+      videoUrls: post.videoUrls, 
       createdBy: {
         id: post.createdBy.id,
         name: post.createdBy.name,
@@ -179,6 +182,7 @@ export const postRouter = createTRPCRouter({
         .refine((urls: any) => urls.every((url: any) => url), {
           message: "Invalid image URLs",
         }),
+        videoUrls: z.array(z.string().url()).optional(),
     })
   )
   .mutation(async ({ ctx, input }) => {
@@ -206,6 +210,7 @@ export const postRouter = createTRPCRouter({
       data: {
         title: input.title,
         gifUrl: input.gifUrl ?? "",
+        videoUrls: input.videoUrls, 
         imageUrls: input.imageUrls ?? [],
       },
     });

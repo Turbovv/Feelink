@@ -19,6 +19,7 @@ model Post {
   title       String
   gifUrl      String?
   imageUrls   String[] 
+  videoUrls   String[]
   createdBy   User      @relation(fields: [createdById], references: [id])
   createdById String
   createdAt   DateTime  @default(now())

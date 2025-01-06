@@ -96,16 +96,32 @@ export default function InnerPage() {
               className="mt-2 mb-2 w-full h-full rounded-lg border border-gray-200 dark:border-gray-700"
             />
           )}
-
-          {post.imageUrls?.length > 0 && (
-            <div className="mt-5 flex gap-4">
+{post.imageUrls.length > 0 && (
+            <div className="flex flex-wrap gap-4">
               {post.imageUrls.map((url, index) => (
-                <img
-                  key={index}
-                  src={url}
-                  alt={`Image ${index + 1}`}
-                  className="w-full h-full rounded-lg mb-2"
-                />
+                <div key={index} className="relative">
+                  <img
+                    key={index}
+                    src={url}
+                    className=" w-full rounded-lg"
+                  />
+                 
+                </div>
+              ))}
+            </div>
+          )}
+          {post.videoUrls.length > 0 && (
+            <div className="flex flex-wrap gap-4">
+              {post.videoUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <video
+                    key={index}
+                    src={url}
+                    className="w-full rounded-lg"
+                    controls
+                  />
+                
+                </div>
               ))}
             </div>
           )}

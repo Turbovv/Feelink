@@ -75,18 +75,38 @@ export function Posts() {
                           className="mt-2 w-full rounded-3xl border border-gray-200 dark:border-gray-700"
                         />
                       )}
-                      {post.imageUrls && post.imageUrls.length > 0 && (
-                        <div className="mt-2 flex   gap-4">
-                          {post.imageUrls.map((url, index) => (
-                            <img
-                              key={index}
-                              src={url}
-                              alt={`Uploaded image ${index + 1}`}
-                              className="w-full h-full  rounded-lg object-cover"
-                            />
-                          ))}
-                        </div>
-                      )}
+
+                    
+
+{post.imageUrls.length > 0 && (
+            <div className="flex flex-wrap gap-4">
+              {post.imageUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    key={index}
+                    src={url}
+                    className="w-full rounded-3xl"
+                  />
+                 
+                </div>
+              ))}
+            </div>
+          )}
+          {post.videoUrls.length > 0 && (
+            <div className="flex flex-wrap  gap-4">
+              {post.videoUrls.map((url, index) => (
+                <div key={index} className="relative w-full">
+                  <video
+                    key={index}
+                    src={url}
+                    className=" rounded-3xl"
+                    controls
+                  />
+                
+                </div>
+              ))}
+            </div>
+          )}
                      </div>
                 </div>
              

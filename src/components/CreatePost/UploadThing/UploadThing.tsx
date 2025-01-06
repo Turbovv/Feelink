@@ -9,12 +9,12 @@ interface UploadThingProps {
 const UploadThing: React.FC<UploadThingProps> = ({ onUploadComplete, onUploadError }) => {
   return (
     <div className="relative inline-flex items-center">
-      <div className="absolute inset-0 flex items-center justify-center  pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <File size={20} className="text-gray-700" />
       </div>
 
       <UploadButton
-        endpoint="imageUploader"
+        endpoint="mediaUploader"
         onClientUploadComplete={onUploadComplete}
         onUploadError={onUploadError}
         className="h-10 w-full opacity-0"

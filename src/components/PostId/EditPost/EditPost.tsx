@@ -11,12 +11,14 @@ export default function EditPost({ postId, initialTitle, initialGifUrl, initialI
   const [title, setTitle] = useState(initialTitle || "");
   const [gifUrl, setGifUrl] = useState(initialGifUrl || "");
   const [imageUrls, setImageUrls] = useState<string[]>(initialImageUrls || []);
+  const [isOpen, setIsOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const utils = api.useContext();
   const editPost = api.post.editPost.useMutation({
     onSuccess: async () => {
       await utils.post.invalidate();
+      setIsOpen(false);
     },
   });
 
@@ -34,14 +36,16 @@ export default function EditPost({ postId, initialTitle, initialGifUrl, initialI
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim() || gifUrl.trim() || imageUrls.length > 0) {
-      editPost.mutate({ postId: postId, title, gifUrl, imageUrls });
+      editPost.mutate({ postId, title, gifUrl, imageUrls });
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Edit Post</Button>
+        <Button variant="outline" onClick={() => setIsOpen(true)}>
+          Edit Post
+        </Button>
       </DialogTrigger>
 
       <DialogContent>
@@ -124,7 +128,6 @@ export default function EditPost({ postId, initialTitle, initialGifUrl, initialI
           </div>
         </form>
       </DialogContent>
-
     </Dialog>
   );
 }
