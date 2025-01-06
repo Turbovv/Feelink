@@ -7,10 +7,11 @@ import GifModal from "../../CreatePost/GifModal/GifModal";
 import UploadThing from "../../CreatePost/UploadThing/UploadThing";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../ui/dialog';
 
-export default function EditPost({ postId, initialTitle, initialGifUrl, initialImageUrls }: any) {
+export default function EditPost({ postId, initialTitle, initialGifUrl, initialImageUrls, initialVideoUrls }: any) {
   const [title, setTitle] = useState(initialTitle || "");
   const [gifUrl, setGifUrl] = useState(initialGifUrl || "");
   const [imageUrls, setImageUrls] = useState<string[]>(initialImageUrls || []);
+  const [videoUrls, setVideoUrls] = useState<string[]>(initialVideoUrls || []);
   const [isOpen, setIsOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -32,11 +33,13 @@ export default function EditPost({ postId, initialTitle, initialGifUrl, initialI
   const removeImage = (index: number) => {
     setImageUrls((prev) => prev.filter((_, i) => i !== index));
   };
-
+  const removeVideo = (index: number) => {
+    setVideoUrls((prev) => prev.filter((_, i) => i !== index));
+  };
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() || gifUrl.trim() || imageUrls.length > 0) {
-      editPost.mutate({ postId, title, gifUrl, imageUrls });
+    if (title.trim() || gifUrl.trim() || imageUrls.length > 0 || videoUrls.length > 0) {
+      editPost.mutate({ postId, title, gifUrl, imageUrls, videoUrls });
     }
   };
 
@@ -105,6 +108,30 @@ export default function EditPost({ postId, initialTitle, initialGifUrl, initialI
                   ))}
                 </div>
               )}
+
+
+              {videoUrls.length > 0 && (
+                <div className="flex flex-wrap gap-4">
+                  {videoUrls.map((url, index) => (
+                    <div key={index} className="relative">
+                      <video
+                        key={index}
+                        src={url}
+                        className="w-full rounded-lg"
+                        controls
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-2 rounded-full bg-black text-white dark:bg-white dark:text-black"
+                        onClick={() => removeVideo(index)}
+                      >
+                        X
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="mt-5 flex justify-between">
@@ -112,7 +139,11 @@ export default function EditPost({ postId, initialTitle, initialGifUrl, initialI
 
               <UploadThing
                 onUploadComplete={(files) => {
-                  setImageUrls((prev) => [...prev, ...files.map((file) => file.url)]);
+                  if (files.some((file: any) => file.type.startsWith("image/"))) {
+                    setImageUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("image/")).map((file) => file.url)]);
+                  } else {
+                    setVideoUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("video/")).map((file) => file.url)]);
+                  }
                 }}
                 onUploadError={(error) => alert(error.message)}
               />

@@ -8,9 +8,8 @@ import { formatDate } from "~/lib/format";
 function PostsList({ posts, userImage, userName, isLoading, error, refetchLikes }: any) {
   return (
     <div className="shadow-md dark:bg-black dark:text-white">
-      <div className="flex justify-between w-full border-b border-red-500 items-center px-20 p-2">
+      <div className="flex justify-center w-full border-b border-red-500 items-center px-20 p-2">
         <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Posts</h2>
-        <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Replies</h2>
       </div>
       {isLoading ? (
         <p className="text-gray-600 dark:text-gray-400">Loading your posts...</p>
@@ -46,15 +45,33 @@ function PostsList({ posts, userImage, userName, isLoading, error, refetchLikes 
                         <img
                           src={post.gifUrl}
                           alt="GIF"
-                          className=" rounded-xl shadow-md w-full"
+                          className="rounded-xl shadow-md w-full"
                         />
                       )}
-                      <img src={post.imageUrls} alt="" />
-                    </div>
+                      
+                      {post.imageUrls.length > 0 && (
+                        <div className="mb-4">
+                          <img
+                            src={post.imageUrls}
+                            alt="Image"
+                            className="w-full rounded-md shadow-md"
+                          />
+                        </div>
+                      )}
 
+                      {post.videoUrls.length > 0 && (
+                        <div >
+                          <video
+                            src={post.videoUrls}
+                            controls
+                            className="w-full rounded-md"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </Link>
-                <div className="flex items-center px-20  gap-10">
+                <div className="flex items-center px-20 gap-10">
                   <p className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <MessageCircle />
                     {post.Comment.length}

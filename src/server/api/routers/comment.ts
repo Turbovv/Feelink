@@ -10,6 +10,7 @@ export const commentRouter = createTRPCRouter({
         content: z.string().min(1),
         gifUrl: z.string().optional(),
         imageUrls: z.array(z.string()).optional(),
+        videoUrls: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -29,6 +30,7 @@ export const commentRouter = createTRPCRouter({
           content: input.content,
           gifUrl: input.gifUrl ?? null,
           imageUrls: input.imageUrls ?? [],
+          videoUrls: input.videoUrls ?? [],
           post: { connect: { id: input.postId } }, 
           createdBy: { connect: { id: ctx.session.user.id } }, 
         },

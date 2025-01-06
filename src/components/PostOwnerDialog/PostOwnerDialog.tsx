@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogClose } from "../ui/dialog";
-import { ArrowLeft, Ellipsis } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent} from "../ui/dialog";
+import { Ellipsis } from "lucide-react";
 import EditPost from "../PostId/EditPost/EditPost";
 import { DeletePost } from "../deletePost";
 
@@ -30,6 +30,7 @@ export default function PostOwnerActions({ post, session, refetch }: any) {
             initialTitle={post.title}
             initialGifUrl={post.gifUrl}
             initialImageUrls={post.imageUrls}
+            initialVideoUrls={post.videoUrls}
             refetch={refetch}
           />
           </div>

@@ -23,6 +23,7 @@ export default function InnerPage() {
 
   const [gifUrl, setGifUrl] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [videoUrls, setVideoUrls] = useState<string[]>([]);
 
   const {
     data: post,
@@ -45,6 +46,7 @@ export default function InnerPage() {
       setCommentContent("");
       setGifUrl("");
       setImageUrls([]);
+      setVideoUrls([]);
       refetch();
     },
   });
@@ -58,8 +60,8 @@ export default function InnerPage() {
   }
 
   const handleCommentSubmit = () => {
-    if (commentContent.trim() || gifUrl.trim() || imageUrls.length > 0) {
-      createComment({ postId: id, content: commentContent, gifUrl, imageUrls });
+    if (commentContent.trim() || gifUrl.trim() || imageUrls.length > 0 || videoUrls.length > 0) {
+      createComment({ postId: id, content: commentContent, gifUrl, imageUrls, videoUrls });
     }
   };
 
@@ -67,7 +69,7 @@ export default function InnerPage() {
     <div className="container mx-auto max-w-2xl">
       <div className="border p-5">
         <div className="flex items-center justify-between gap-5">
-          <Button variant={"ghost"} onClick={() => history.back()}>
+          <Button variant="ghost" onClick={() => history.back()}>
             <ArrowLeft />
             <h1 className="text-2xl">Post</h1>
           </Button>
@@ -93,40 +95,25 @@ export default function InnerPage() {
             <img
               src={post.gifUrl}
               alt="Gif"
-              className="mt-2 mb-2 w-full h-full rounded-lg border border-gray-200 dark:border-gray-700"
+              className="mt-2 mb-2 w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700"
             />
           )}
-{post.imageUrls.length > 0 && (
+          {post.imageUrls.length > 0 && (
             <div className="flex flex-wrap gap-4">
               {post.imageUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <img
-                    key={index}
-                    src={url}
-                    className=" w-full rounded-lg"
-                  />
-                 
-                </div>
+                <img key={index} src={url} className="w-full h-auto rounded-lg" />
               ))}
             </div>
           )}
           {post.videoUrls.length > 0 && (
             <div className="flex flex-wrap gap-4">
               {post.videoUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <video
-                    key={index}
-                    src={url}
-                    className="w-full rounded-lg"
-                    controls
-                  />
-                
-                </div>
+                <video key={index} src={url} className="w-full h-auto rounded-lg" controls />
               ))}
             </div>
           )}
           <p>{formatDate(post.createdAt.toString(), true)}</p>
-          <div className="flex items-center gap-5 ">
+          <div className="flex items-center gap-5">
             <p className="flex items-center gap-2">
               <MessageCircle />
               {post.comments.length}
@@ -153,7 +140,7 @@ export default function InnerPage() {
           <span className="text-blue-500">@{post.createdBy.name}</span>
         </p>
         <textarea
-          className="w-full resize-none rounded p-14 text-xl  "
+          className="w-full resize-none rounded p-14 text-xl"
           placeholder="Post your reply"
           value={commentContent}
           rows={1}
@@ -169,7 +156,7 @@ export default function InnerPage() {
         />
         {gifUrl && (
           <div className="relative mt-3 ml-10 mr-4">
-            <img src={gifUrl} alt="Selected GIF" className=" rounded-3xl w-full" />
+            <img src={gifUrl} alt="Selected GIF" className="rounded-3xl w-full h-auto" />
             <Button variant="ghost" className="absolute top-1 right-1" onClick={() => setGifUrl("")}>
               X
             </Button>
@@ -179,11 +166,27 @@ export default function InnerPage() {
           <div className="flex flex-wrap gap-3 mt-3 ml-10 mr-4">
             {imageUrls.map((url, index) => (
               <div key={index} className="relative">
-                <img src={url} alt={`Image ${index + 1}`} className=" rounded-3xl w-full" />
+                <img src={url} alt={`Image ${index + 1}`} className="rounded-3xl w-full h-auto" />
                 <Button
                   variant="ghost"
                   className="absolute top-1 right-1"
                   onClick={() => setImageUrls((prev) => prev.filter((_, i) => i !== index))}
+                >
+                  X
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        {videoUrls.length > 0 && (
+          <div className="flex flex-wrap gap-3 mt-3 ml-10 mr-4">
+            {videoUrls.map((url, index) => (
+              <div key={index} className="relative">
+                <video src={url} controls className="rounded-3xl w-full h-auto" />
+                <Button
+                  variant="ghost"
+                  className="absolute top-1 right-1"
+                  onClick={() => setVideoUrls((prev) => prev.filter((_, i) => i !== index))}
                 >
                   X
                 </Button>
@@ -196,71 +199,90 @@ export default function InnerPage() {
           <GifModal onGifSelect={setGifUrl} />
           <UploadThing
             onUploadComplete={(files) => {
-              setImageUrls((prev) => [...prev, ...files.map((file) => file.url)]);
+              if (files.some((file: any) => file.type.startsWith("image/"))) {
+                setImageUrls((prev) => [
+                  ...prev,
+                  ...files.filter((file: any) => file.type.startsWith("image/")).map((file) => file.url),
+                ]);
+              } else {
+                setVideoUrls((prev) => [
+                  ...prev,
+                  ...files.filter((file: any) => file.type.startsWith("video/")).map((file) => file.url),
+                ]);
+              }
             }}
             onUploadError={(error) => alert(error.message)}
           />
           <Button
             className="rounded-full"
             onClick={handleCommentSubmit}
-            disabled={!commentContent.trim() && !gifUrl && imageUrls.length === 0}
+            disabled={!commentContent.trim() && !gifUrl && imageUrls.length === 0 && videoUrls.length === 0}
           >
             Reply
           </Button>
         </div>
       </div>
-      <div className="">
-        <div className="">
-          {post.comments?.map((comment: any) => (
-            <div
-              key={comment.id}
-              className="break-words rounded border border-gray-300 p-4"
-              style={{
-                wordBreak: "break-word",
-              }}
-            >
-              <div className="flex items-start space-x-3">
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src={comment.createdBy.image || "Avatar"}
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between">
+
+      <div>
+        {post.comments?.map((comment: any) => (
+          <div
+            key={comment.id}
+            className="break-words rounded border border-gray-300 p-4"
+            style={{
+              wordBreak: "break-word",
+            }}
+          >
+            <div className="flex items-start space-x-3">
+              <img
+                className="h-10 w-10 rounded-full"
+                src={comment.createdBy.image || "Avatar"}
+              />
+              <div className="flex-1">
+                <div className="flex justify-between">
+                  <div>
                     <div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold">{comment.createdBy.name}</p>
-                          <p className="text-sm text-gray-400">{formatDate(comment.createdAt, false)}</p>
-                        </div>
-                        <p className="mt-2 text-sm text-gray-600">{comment.content}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold">{comment.createdBy.name}</p>
+                        <p className="text-sm text-gray-400">
+                          {formatDate(comment.createdAt, false)}
+                        </p>
                       </div>
+                      <p className="mt-2 text-sm dark:text-white">{comment.content}</p>
                     </div>
                   </div>
-                  {comment.imageUrls?.length > 0 && (
-                    <div className="mt-3 gap-3">
-                      {comment.imageUrls.map((url: any, index: any) => (
-                        <img key={index} src={url} alt={`Comment Image ${index + 1}`} className="rounded-lg w-full h-full" />
-                      ))}
-                    </div>
-                  )}
-                  {comment.gifUrl && (
-                    <img
-                      src={comment.gifUrl}
-                      alt="Comment GIF"
-                      className="mt-2 rounded-lg w-full h-full"
-                    />
-                  )}
                 </div>
-                {session?.user.id === comment.createdBy.id && (
-                  <div className="ml-auto">
-                    <DeleteComment commentId={comment.id} refetch={refetch} />
+
+                {comment.videoUrls?.length > 0 && (
+                  <div className="flex flex-wrap gap-3 mt-3 ml-10 mr-4">
+                    {comment.videoUrls.map((url: any, index: any) => (
+                      <video key={index} src={url} controls className="rounded-3xl w-full h-auto" />
+                    ))}
                   </div>
                 )}
-              </div>
-            </div>
-          ))}
+                {comment.imageUrls?.length > 0 && (
+                  <div className="mt-3 gap-3">
+                    {comment.imageUrls.map((url: any, index: any) => (
+                      <img key={index} src={url} alt={`Comment Image ${index + 1}`} className="rounded-lg w-full h-auto" />
+                    ))}
+                  </div>
+                )}
 
-        </div>
+                {comment.gifUrl && (
+                  <img
+                    src={comment.gifUrl}
+                    alt="Comment GIF"
+                    className="mt-2 rounded-lg w-full h-auto"
+                  />
+                )}
+              </div>
+              {session?.user.id === comment.createdBy.id && (
+                <div className="ml-auto">
+                  <DeleteComment commentId={comment.id} refetch={refetch} />
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

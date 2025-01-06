@@ -155,7 +155,8 @@ export const postRouter = createTRPCRouter({
         content: comment.content,
         createdAt: comment.createdAt,
         gifUrl: comment.gifUrl,
-        imageUrls: comment.imageUrls, 
+        imageUrls: comment.imageUrls,
+        videoUrls: comment.videoUrls, 
         createdBy: {
           id: comment.createdBy.id,
           name: comment.createdBy.name,
@@ -210,7 +211,7 @@ export const postRouter = createTRPCRouter({
       data: {
         title: input.title,
         gifUrl: input.gifUrl ?? "",
-        videoUrls: input.videoUrls, 
+        videoUrls: input.videoUrls ?? [], 
         imageUrls: input.imageUrls ?? [],
       },
     });

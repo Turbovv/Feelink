@@ -66,6 +66,7 @@ model Comment {
   content     String
   gifUrl      String? 
   imageUrls   String[]
+  videoUrls   String[]
   createdAt   DateTime @default(now())
   postId      String
   post        Post     @relation(fields: [postId], references: [id])

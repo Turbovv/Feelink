@@ -18,7 +18,7 @@ function ProfileCard({ user, isCurrentUser, sessionUserId }:any) {
     <div className="col-span-1 rounded-lg dark:bg-black shadow-md dark:text-white">
       <div className="">
         <div className="">
-          <img src={user.background} alt="background" className="relative border border-gray-400 h-48 w-full object-cover" />
+          <img src={user.background}  className="relative border bg-gray-400 border-gray-400 h-48 w-full object-cover" />
          <div className="flex items-center justify-between p-6">
          <img
             src={user.image || "/default-avatar.png"}
