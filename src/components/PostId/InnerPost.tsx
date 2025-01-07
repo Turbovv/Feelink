@@ -130,7 +130,8 @@ export default function InnerPage() {
         </div>
       </div>
 
-      <div className="relative border">
+      {session ? (
+        <div className="relative border border-red-500">
         <img
           className="absolute top-8 ml-2 h-10 w-10 rounded-full"
           src={session?.user.image || "Avatar"}
@@ -222,6 +223,9 @@ export default function InnerPage() {
           </Button>
         </div>
       </div>
+      ) : (
+        <p></p>
+      )}
 
       <div>
         {post.comments?.map((comment: any) => (

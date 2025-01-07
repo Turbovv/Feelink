@@ -63,6 +63,29 @@ export const settingsRouter = createTRPCRouter({
       };
     }),
 
+  getUserById: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: input.userId },
+        include: {
+          followers: true,
+          following: true,
+        },
+      });
+
+      if (!user) throw new Error("User not found");
+
+      const isFollowing = user.followers.some(
+        (follower) => follower.userId === ctx.session?.user?.id
+      );
+
+      return {
+        ...user,
+        isFollowing,
+      };
+    }),
+
   updateProfile: protectedProcedure
     .input(
       z.object({
