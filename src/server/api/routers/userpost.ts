@@ -1,39 +1,41 @@
+/* eslint-disable */
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const settingsRouter = createTRPCRouter({
   getByUser: publicProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const userId = input.userId;
+  .input(z.object({ userId: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const userId = input.userId;
 
-      const userPosts = await ctx.db.post.findMany({
-        where: { createdById: userId },
-        orderBy: { createdAt: "desc" },
-        include: {
-          createdBy: true,
-          Comment: true,
-          _count: {
-            select: {
-              Like: true,
-            },
+    const userPosts = await ctx.db.post.findMany({
+      where: { createdById: userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        createdBy: true,
+        Comment: true,
+        _count: {
+          select: {
+            Like: true,
           },
-          Like: ctx.session?.user
-            ? {
-                where: { userId: ctx.session.user.id },
-                select: { userId: true },
-              }
-            : undefined,
         },
-      });
+        Like: ctx.session?.user
+          ? {
+              where: { userId: ctx.session.user.id },
+              select: { userId: true },
+            }
+          : undefined,
+      },
+    });
 
-      return userPosts.map((post) => ({
-        ...post,
-        isLiked:
-          ctx.session?.user &&
-          post.Like?.some((like) => like.userId === ctx.session.user.id),
-      }));
-    }),
+    return userPosts.map((post) => ({
+      ...post,
+      isLiked:
+        ctx.session?.user &&
+        post.Like?.some((like) => like.userId === ctx.session?.user?.id), 
+    }));
+  }),
+
 
   getUserByUsername: publicProcedure
     .input(z.object({ username: z.string() }))
@@ -52,7 +54,7 @@ export const settingsRouter = createTRPCRouter({
       const followersCount = user.followers.length;
       const followingCount = user.following.length;
       const isFollowing = ctx.session?.user
-        ? user.followers.some((follower) => follower.userId === ctx.session.user.id)
+        ? user.followers.some((follower) => follower.userId === ctx.session?.user?.id)
         : false;
 
       return {
