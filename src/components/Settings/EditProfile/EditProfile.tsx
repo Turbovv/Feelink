@@ -8,6 +8,16 @@ import { UploadButton } from "~/utils/uploadthing";
 
 export default function EditProfile() {
   const { data: session } = useSession();
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!session) {
+      router.push("/");
+    }
+  }, [session, router]);
+
+  if (!session) return <p>Loading...</p>;
+
   const { data: user, isLoading } = api.userpost.getUserById.useQuery({
     userId: session?.user.id ?? "",
   });
@@ -26,8 +36,6 @@ export default function EditProfile() {
 
   const { mutate: updateProfile, isLoading: isUpdating }: any =
     api.userpost.updateProfile.useMutation();
-
-  const router = useRouter();
 
   const { refetch } = api.userpost.getUserByUsername.useQuery(
     { username: session?.user.name ?? "" },
@@ -52,9 +60,9 @@ export default function EditProfile() {
     try {
       await updateProfile({ image, background, description });
       await refetch();
-      if (session?.user.name) {//+
-        router.push(`/settings/${encodeURIComponent(session.user.name)}`);//+
-      }//
+      if (session?.user.name) {
+        router.push(`/settings/${encodeURIComponent(session.user.name)}`);
+      }
     } catch (error) {
       console.error("Failed to update profile:", error);
     }
