@@ -12,8 +12,9 @@ function Settings() {
 
   if (!username) return <div>Invalid username</div>;
 
+  const decodedUsername = decodeURIComponent(username as string);
   const { data: user, isLoading: userLoading } = api.userpost.getUserByUsername.useQuery({
-    username: username as string,
+    username: decodedUsername,
   });
 
   const { data: posts, isLoading: postsLoading, error, refetch: refetchLikes } =
@@ -28,7 +29,7 @@ function Settings() {
 
   return (
     <div className="container border mx-auto max-w-2xl">
-      <div className="">
+      <div>
         <ProfileCard user={user} isCurrentUser={isCurrentUser} sessionUserId={session?.user?.id} />
         <UserPosts
           posts={posts ?? []}

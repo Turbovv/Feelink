@@ -52,7 +52,9 @@ export default function EditProfile() {
     try {
       await updateProfile({ image, background, description });
       await refetch();
-      router.push(`/settings/${session?.user.name}`);
+      if (session?.user.name) {//+
+        router.push(`/settings/${encodeURIComponent(session.user.name)}`);//+
+      }//
     } catch (error) {
       console.error("Failed to update profile:", error);
     }

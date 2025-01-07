@@ -38,31 +38,33 @@ export const settingsRouter = createTRPCRouter({
   }),
 
   getUserByUsername: publicProcedure
-    .input(z.object({ username: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findUnique({
-        where: { name: input.username },
-        include: {
-          followers: true,
-          following: true,
-        },
-      });
+  .input(z.object({ username: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const username = decodeURIComponent(input.username); // Decode username
+    const user = await ctx.db.user.findUnique({
+      where: { name: username },
+      include: {
+        followers: true,
+        following: true,
+      },
+    });
 
-      if (!user) return null;
+    if (!user) return null;
 
-      const followersCount = user.followers.length;
-      const followingCount = user.following.length;
-      const isFollowing = user.followers.some(
-        (follower) => follower.userId === ctx.session?.user?.id
-      );
+    const followersCount = user.followers.length;
+    const followingCount = user.following.length;
+    const isFollowing = user.followers.some(
+      (follower) => follower.userId === ctx.session?.user?.id
+    );
 
-      return {
-        ...user,
-        followersCount,
-        followingCount,
-        isFollowing,
-      };
-    }),
+    return {
+      ...user,
+      followersCount,
+      followingCount,
+      isFollowing,
+    };
+  }),
+
 
   getUserById: protectedProcedure
     .input(z.object({ userId: z.string() }))
