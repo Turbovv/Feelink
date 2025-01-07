@@ -38,6 +38,7 @@ function Settings() {
           isLoading={postsLoading}
           error={error}
           refetchLikes={refetchLikes}
+          isAuthenticated={!!session?.user}
         />
       </div>
     </div>

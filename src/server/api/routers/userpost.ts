@@ -1,94 +1,69 @@
-/* eslint-disable */
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const settingsRouter = createTRPCRouter({
-  
-  getByUser: protectedProcedure
-  .input(z.object({ userId: z.string() }))
-  .query(async ({ ctx, input }) => {
-    const userId = input.userId;
-
-    const userPosts = await ctx.db.post.findMany({
-      where: { createdById: userId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        createdBy: true,
-        Comment: true,
-        _count: {
-          select: {
-            Like: true,
-          },
-        },
-        Like: {
-          where: {
-            userId: ctx.session.user.id,
-          },
-          select: {
-            userId: true,
-          },
-        },
-      },
-    });
-
-    return userPosts.map((post) => ({
-      ...post,
-      isLiked: post.Like?.some((like) => like.userId === ctx.session.user.id) ?? false,
-    }));
-  }),
-
-  getUserByUsername: publicProcedure
-  .input(z.object({ username: z.string() }))
-  .query(async ({ ctx, input }) => {
-    const username = decodeURIComponent(input.username); // Decode username
-    const user = await ctx.db.user.findUnique({
-      where: { name: username },
-      include: {
-        followers: true,
-        following: true,
-      },
-    });
-
-    if (!user) return null;
-
-    const followersCount = user.followers.length;
-    const followingCount = user.following.length;
-    const isFollowing = user.followers.some(
-      (follower) => follower.userId === ctx.session?.user?.id
-    );
-
-    return {
-      ...user,
-      followersCount,
-      followingCount,
-      isFollowing,
-    };
-  }),
-
-
-  getUserById: protectedProcedure
+  getByUser: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
+      const userId = input.userId;
+
+      const userPosts = await ctx.db.post.findMany({
+        where: { createdById: userId },
+        orderBy: { createdAt: "desc" },
+        include: {
+          createdBy: true,
+          Comment: true,
+          _count: {
+            select: {
+              Like: true,
+            },
+          },
+          Like: ctx.session?.user
+            ? {
+                where: { userId: ctx.session.user.id },
+                select: { userId: true },
+              }
+            : undefined,
+        },
+      });
+
+      return userPosts.map((post) => ({
+        ...post,
+        isLiked:
+          ctx.session?.user &&
+          post.Like?.some((like) => like.userId === ctx.session.user.id),
+      }));
+    }),
+
+  getUserByUsername: publicProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const username = decodeURIComponent(input.username);
       const user = await ctx.db.user.findUnique({
-        where: { id: input.userId },
+        where: { name: username },
         include: {
           followers: true,
           following: true,
         },
       });
 
-      if (!user) throw new Error("User not found");
+      if (!user) return null;
 
-      const isFollowing = user.followers.some(
-        (follower) => follower.userId === ctx.session.user.id
-      );
+      const followersCount = user.followers.length;
+      const followingCount = user.following.length;
+      const isFollowing = ctx.session?.user
+        ? user.followers.some((follower) => follower.userId === ctx.session.user.id)
+        : false;
 
       return {
         ...user,
+        followersCount,
+        followingCount,
         isFollowing,
       };
     }),
-    updateProfile: protectedProcedure
+
+  updateProfile: protectedProcedure
     .input(
       z.object({
         image: z.string().url().optional(),

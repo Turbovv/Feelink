@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { LikeButton } from "../../PostId/LikeButton/like";
 import { formatDate } from "~/lib/format";
+import NoPosts from "~/components/no-posts";
 
 
 
@@ -88,7 +89,7 @@ function PostsList({ posts, userImage, userName, isLoading, error, refetchLikes 
               </div>
             ))
           ) : (
-            <p className="text-gray-500 dark:text-gray-400">No posts found.</p>
+            <NoPosts />
           )}
         </div>
       )}
