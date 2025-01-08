@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import { ArrowLeft, Ellipsis, MessageCircle } from "lucide-react";
@@ -50,6 +50,13 @@ export default function InnerPage() {
       refetch();
     },
   });
+  useEffect(() => {
+    if (post?.title) {
+      document.title = post.createdBy.name + ' - ' + post.title;
+    } else {
+      document.title = "Feelink";
+    }
+  }, [post]);
 
   if (isLoading) {
     return <p>Loading...</p>;

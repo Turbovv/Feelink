@@ -7,6 +7,7 @@ import Link from "next/link";
 import { FollowUnfollowButton } from "~/components/Settings/follow";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
 
 const FollowersPage: React.FC = () => {
   const { username } = useParams();
@@ -20,6 +21,14 @@ const FollowersPage: React.FC = () => {
   const { data: followers } = api.follow.getFollowers.useQuery({
     userId: user?.id ?? "",
   });
+      useEffect(() => {
+        if (user?.name) {
+          document.title = "Peope Following" + '  ' + user.name
+        } else {
+          document.title = "Feelink";
+        }
+      }, [user]);
+
 
   if (!user) return <div>User not found</div>;
 

@@ -5,6 +5,7 @@ import { api } from "~/trpc/react";
 import { useSession } from "next-auth/react";
 import ProfileCard from "~/components/Settings/ProfileCard/ProfileCard";
 import UserPosts from "~/components/Settings/UserPosts/UserPosts";
+import { useEffect } from "react";
 
 function Settings() {
   const { username } = useParams();
@@ -21,6 +22,13 @@ function Settings() {
     api.userpost.getByUser.useQuery({
       userId: user?.id ?? "",
     });
+      useEffect(() => {
+        if (user?.name) {
+          document.title = user.name
+        } else {
+          document.title = "Feelink";
+        }
+      }, [user]);
 
   if (userLoading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
