@@ -18,10 +18,12 @@ export function Navbar() {
   }
 
   return (
-    <div className="flex h-16 w-full items-center justify-between px-4">
+    <div
+      className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-opacity-50 backdrop-blur-md bg-white px-4  dark:bg-black dark:bg-opacity-50"
+    >
       <div
-        className="text-lg font-semibold"
-        onClick={() => router.push("/")} 
+        className="cursor-pointer text-lg font-semibold"
+        onClick={() => router.push("/")}
       >
         Feelink
       </div>
