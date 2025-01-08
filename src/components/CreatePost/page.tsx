@@ -138,19 +138,21 @@ export default function CreatePost() {
 
         </div>
 
-        <div className=" flex items-center justify-end">
-          <GifModal onGifSelect={setGifUrl} />
+        <div className=" flex items-center justify-between">
+         <div className="flex items-center">
+         <GifModal onGifSelect={setGifUrl} />
 
-          <UploadThing
-            onUploadComplete={(files) => {
-              if (files.some((file: any) => file.type.startsWith("image/"))) {
-                setImageUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("image/")).map((file) => file.url)]);
-              } else {
-                setVideoUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("video/")).map((file) => file.url)]);
-              }
-            }}
-            onUploadError={(error) => alert(error.message)}
-          />
+<UploadThing
+  onUploadComplete={(files) => {
+    if (files.some((file: any) => file.type.startsWith("image/"))) {
+      setImageUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("image/")).map((file) => file.url)]);
+    } else {
+      setVideoUrls((prev) => [...prev, ...files.filter((file: any) => file.type.startsWith("video/")).map((file) => file.url)]);
+    }
+  }}
+  onUploadError={(error) => alert(error.message)}
+/>
+         </div>
           <Button
             className="rounded-3xl px-5 py-2"
             type="submit"

@@ -5,7 +5,7 @@ import { api } from "~/trpc/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
-import { FilmIcon } from "lucide-react";
+import { Image } from "lucide-react";
 
 interface GifPickerProps {
   onGifSelect: (gifUrl: string) => void;
@@ -35,7 +35,7 @@ export default function GifModal({ onGifSelect }: GifPickerProps) {
       <Button variant="ghost" 
       type="button" 
       onClick={() => setIsOpen(true)}>
-      <FilmIcon className="border-2 border-blue-500" />
+      <Image  className="border-2 dark:border-blue-300" />
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

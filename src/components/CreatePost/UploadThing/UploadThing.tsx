@@ -1,5 +1,5 @@
 import { UploadButton } from "~/utils/uploadthing";
-import { File } from "lucide-react";
+import { FileVideo } from "lucide-react";
 
 interface UploadThingProps {
   onUploadComplete: (files: { url: string }[]) => void;
@@ -10,7 +10,7 @@ const UploadThing: React.FC<UploadThingProps> = ({ onUploadComplete, onUploadErr
   return (
     <div className="relative inline-flex items-center">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <File size={20} className="text-gray-700" />
+        <FileVideo size={20} className="text-gray-700" />
       </div>
 
       <UploadButton
