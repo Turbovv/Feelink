@@ -131,7 +131,7 @@ export default function InnerPage() {
       </div>
 
       {session ? (
-        <div className="relative border border-red-500">
+        <div className="relative border ">
         <img
           className="absolute top-8 ml-2 h-10 w-10 rounded-full"
           src={session?.user.image || "Avatar"}

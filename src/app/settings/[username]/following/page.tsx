@@ -5,6 +5,8 @@ import { api } from "~/trpc/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FollowUnfollowButton } from "~/components/Settings/follow";
+import { Button } from "~/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const FollowingPage: React.FC = () => {
   const { username } = useParams();
@@ -26,6 +28,9 @@ const FollowingPage: React.FC = () => {
 
   return (
     <div className="container mx-auto max-w-2xl">
+         <Button variant="ghost" onClick={() => history.back()}>
+            <ArrowLeft />
+          </Button>
       <div className="border bg-white shadow-md dark:bg-gray-800 dark:text-white">
         {userLoading ?? followingLoading ? (
           <div>Loading...</div>
