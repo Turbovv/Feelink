@@ -36,7 +36,7 @@ function Settings() {
   const isCurrentUser = session?.user?.id === user.id;
 
   return (
-    <div className="container border mx-auto max-w-2xl">
+    <div className="container border mx-auto max-w-2xl mt-14">
       <div>
         <ProfileCard user={user} isCurrentUser={isCurrentUser} sessionUserId={session?.user?.id} />
         <UserPosts

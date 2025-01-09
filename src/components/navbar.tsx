@@ -19,7 +19,7 @@ export function Navbar() {
 
   return (
     <div
-      className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-opacity-50 backdrop-blur-md bg-white px-4  dark:bg-black dark:bg-opacity-50"
+      className="fixed top-0 left-0  flex h-14 w-full items-center justify-between bg-opacity-50  bg-white px-4  dark:bg-black dark:bg-opacity-50"
     >
       <div
         className="cursor-pointer text-lg font-semibold"

@@ -14,7 +14,7 @@ import NoPosts from "../no-posts";
 export function Posts() {
   const { data: session } = useSession();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const {
     data: posts,
     refetch,
@@ -22,6 +22,7 @@ export function Posts() {
     error,
     refetch: refetchLikes,
   } = api.post.Posts.useQuery();
+
   if (isLoading) {
     return (
       <p className="text-center text-gray-500 dark:text-gray-400">Loading...</p>
@@ -40,16 +41,25 @@ export function Posts() {
     <div className="mx-auto w-full max-w-2xl">
       <CreatePost />
       {posts && posts.length > 0 ? (
-        <div className="">
+        <div className={session ? "" : "mt-16"}>
           {posts.map((post) => (
             <div key={post.id} className="text-lg font-semibold">
-              <div className="relative rounded-lg border  border-gray-200 bg-white p-2 shadow-md transition dark:bg-black hover:shadow-lg dark:hover:shadow-xl">
+              <div className="relative rounded-lg border border-gray-200 bg-white p-2 shadow-md transition dark:bg-black hover:shadow-lg dark:hover:shadow-xl">
                 {session?.user.id === post.createdBy.id && (
                   <div className="absolute right-4 top-4">
-                    <PostOwnerDialog post={post} session={session} refetch={refetch} />
+                    <PostOwnerDialog
+                      post={post}
+                      session={session}
+                      refetch={refetch}
+                    />
                   </div>
                 )}
-                <div className="cursor-pointer" onClick={async () => await router.push(`/posts/${post?.id}`)}>
+                <div
+                  className="cursor-pointer"
+                  onClick={async () =>
+                    await router.push(`/posts/${post?.id}`)
+                  }
+                >
                   <div className="flex items-center gap-2">
                     <img
                       className="h-14 w-14 rounded-full"
@@ -77,8 +87,6 @@ export function Posts() {
                       />
                     )}
 
-
-
                     {post.imageUrls.length > 0 && (
                       <div className="flex flex-wrap gap-4">
                         {post.imageUrls.map((url, index) => (
@@ -88,22 +96,20 @@ export function Posts() {
                               src={url}
                               className="w-full rounded-3xl"
                             />
-
                           </div>
                         ))}
                       </div>
                     )}
                     {post.videoUrls.length > 0 && (
-                      <div className="flex flex-wrap  gap-4">
+                      <div className="flex flex-wrap gap-4">
                         {post.videoUrls.map((url, index) => (
                           <div key={index} className="relative w-full">
                             <video
                               key={index}
                               src={url}
-                              className=" rounded-3xl"
+                              className="rounded-3xl"
                               controls
                             />
-
                           </div>
                         ))}
                       </div>
@@ -111,8 +117,11 @@ export function Posts() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center gap-10  ml-16">
-                  <p onClick={() => router.push(`/posts/${post.id}`)} className="flex items-center gap-2 cursor-pointer text-gray-600 dark:text-gray-400">
+                <div className="mt-4 flex items-center gap-10 ml-16">
+                  <p
+                    onClick={() => router.push(`/posts/${post.id}`)}
+                    className="flex cursor-pointer items-center gap-2 text-gray-600 dark:text-gray-400"
+                  >
                     <MessageCircle />
                     {post.Comment.length}
                   </p>

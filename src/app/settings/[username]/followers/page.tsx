@@ -33,7 +33,7 @@ const FollowersPage: React.FC = () => {
   if (!user) return <div>User not found</div>;
 
   return (
-    <div className="container mx-auto max-w-2xl">
+    <div className="container mx-auto max-w-2xl mt-14">
       <Button variant="ghost" onClick={() => history.back()}>
             <ArrowLeft />
           </Button>
@@ -57,7 +57,7 @@ const FollowersPage: React.FC = () => {
                     {follower.user.name}
                   </Link>
                 </div>
-                {session?.user?.id !== follower.userId && (
+                {session?.user?.id !== follower.userId && session &&  (
                   <FollowUnfollowButton
                     userId={follower.userId}
                     isFollowing={follower.isFollowing ?? false}

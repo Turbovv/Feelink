@@ -53,7 +53,7 @@ export default function CreatePost() {
 
   return (
     <form
-      className="space-y-6"
+      className="space-y-6 border"
       onSubmit={(e) => {
         e.preventDefault();
         if (title.trim() || gifUrl.trim() || imageUrls.length > 0 || videoUrls.length > 0) {

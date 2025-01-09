@@ -1,74 +1,77 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const followRouter = createTRPCRouter({
-  getFollowingWithStatus: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
+  getFollowingWithStatus: publicProcedure // Changed from protectedProcedure
+  .input(z.object({ userId: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const userId = ctx.session?.user?.id; // Optional chaining for unauthorized users
 
-      const following = await ctx.db.userFollowing.findMany({
-        where: { userId: input.userId },
-        include: {
-          following: true,
-        },
-      });
+    const following = await ctx.db.userFollowing.findMany({
+      where: { userId: input.userId },
+      include: {
+        following: true,
+      },
+    });
 
-      const followingWithStatus = await Promise.all(
-        following.map(async (entry) => {
-          const isFollowingBack = await ctx.db.userFollowing.findUnique({
-            where: {
-              userId_followingId: {
-                userId: entry.following.id,
-                followingId: userId,
+    const followingWithStatus = await Promise.all(
+      following.map(async (entry) => {
+        const isFollowingBack = userId
+          ? await ctx.db.userFollowing.findUnique({
+              where: {
+                userId_followingId: {
+                  userId: entry.following.id,
+                  followingId: userId,
+                },
               },
-            },
-          });
+            })
+          : null;
 
-          return {
-            ...entry,
-            isFollowingBack: !!isFollowingBack,
-          };
-        })
-      );
+        return {
+          ...entry,
+          isFollowingBack: !!isFollowingBack,
+        };
+      })
+    );
 
-      return followingWithStatus;
-    }),
+    return followingWithStatus;
+  }),
 
+getFollowers: publicProcedure // Changed from protectedProcedure
+  .input(z.object({ userId: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const userId = ctx.session?.user?.id; // Optional chaining for unauthorized users
 
-    getFollowers: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
-  
-      const followers = await ctx.db.userFollowing.findMany({
-        where: { followingId: input.userId },
-        include: {
-          user: true,
-        },
-      });
-  
-      const followersWithStatus = await Promise.all(
-        followers.map(async (follower) => {
-          const isFollowing = await ctx.db.userFollowing.findUnique({
-            where: {
-              userId_followingId: {
-                userId,
-                followingId: follower.userId,
+    const followers = await ctx.db.userFollowing.findMany({
+      where: { followingId: input.userId },
+      include: {
+        user: true,
+      },
+    });
+
+    const followersWithStatus = await Promise.all(
+      followers.map(async (follower) => {
+        const isFollowing = userId
+          ? await ctx.db.userFollowing.findUnique({
+              where: {
+                userId_followingId: {
+                  userId,
+                  followingId: follower.userId,
+                },
               },
-            },
-          });
-  
-          return {
-            ...follower,
-            isFollowing: !!isFollowing,
-          };
-        })
-      );
-  
-      return followersWithStatus;
-    }),
+            })
+          : null;
+
+        return {
+          ...follower,
+          isFollowing: !!isFollowing,
+        };
+      })
+    );
+
+    return followersWithStatus;
+  }),
   followUser: protectedProcedure
     .input(z.object({ followingId: z.string() }))
     .mutation(async ({ ctx, input }) => {

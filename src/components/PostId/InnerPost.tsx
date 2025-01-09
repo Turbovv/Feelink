@@ -73,7 +73,7 @@ export default function InnerPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl">
+    <div className="container mx-auto max-w-2xl mt-14">
       <div className="border p-5">
         <div className="flex items-center justify-between gap-5">
           <Button variant="ghost" onClick={() => history.back()}>
@@ -244,10 +244,13 @@ export default function InnerPage() {
             }}
           >
             <div className="flex items-start space-x-3">
+              <Link href={`/settings/${comment?.createdBy?.name}`}>
               <img
                 className="h-10 w-10 rounded-full"
                 src={comment.createdBy.image || "Avatar"}
               />
+
+              </Link>
               <div className="flex-1">
                 <div className="flex justify-between">
                   <div>
