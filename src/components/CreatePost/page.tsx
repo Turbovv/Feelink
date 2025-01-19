@@ -53,7 +53,7 @@ export default function CreatePost() {
 
   return (
     <form
-      className="space-y-6 border"
+      className="space-y-6 border mt-14"
       onSubmit={(e) => {
         e.preventDefault();
         if (title.trim() || gifUrl.trim() || imageUrls.length > 0 || videoUrls.length > 0) {
@@ -61,7 +61,7 @@ export default function CreatePost() {
         }
       }}
     >
-      <div className="relative rounded-lg border border-gray-300 p-4">
+      <div className="relative rounded-lg p-4">
         <div className="flex flex-col gap-4">
           <textarea
             ref={textareaRef}

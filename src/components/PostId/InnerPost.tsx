@@ -73,7 +73,7 @@ export default function InnerPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl mt-14">
+    <div className="container mx-auto max-w-2xl mt-14 ">
       <div className="border p-5">
         <div className="flex items-center justify-between gap-5">
           <Button variant="ghost" onClick={() => history.back()}>
